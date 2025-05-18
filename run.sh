@@ -15,7 +15,7 @@ fi
 # Gera o server.cfg usando envsubst
 envsubst < /fx-data/scripts-base/server.template.cfg > /fx-data/scripts-base/server.cfg
 
-chmod +x /opt/fxserver/run.sh
+chmod +x /opt/cfx-server/run.sh
 
 # Inicia o FXServer
-sh /opt/fxserver/run.sh
+sh /opt/cfx-server/run.sh
