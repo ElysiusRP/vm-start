@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Espera o bind mount ficar disponível
-while [ ! -f /fx-data/script-base/server.template.cfg ]; do
+while [ ! -f /fx-data ]; do
   echo "Aguardando bind /fx-data..."
   sleep 1
 done
