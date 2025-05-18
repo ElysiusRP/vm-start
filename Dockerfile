@@ -1,12 +1,12 @@
 FROM traskin/fxserver:latest
 
 # Copia seu script de start para o container (opcional)
-COPY start.sh /start.sh
+COPY run.sh /run.sh
 
-RUN ls -lah /start.sh
+RUN ls -lah /run.sh
 
 # Dá permissão de execução
-RUN chmod +x /start.sh
+RUN chmod +x /run.sh
 
 # Comando padrão ao iniciar o container
-ENTRYPOINT ["/start.sh"]
+ENTRYPOINT ["sh", "/run.sh"]
