@@ -17,7 +17,24 @@ cp -f /fx-data/scripts-base/server.template.cfg /fx-data/scripts-base/server.cfg
 # Gera o server.cfg usando envsubst
 # envsubst '$DB_USER $DB_PASS $DB_HOST $DB_NAME' < /fx-data/scripts-base/server.template.cfg > /fx-data/scripts-base/server.cfg
 
-perl -i -pe 's/\$(\w+)/$ENV{$1}/g' /fx-data/scripts-base/server.cfg
+# Certifique-se de que todas as variáveis estejam exportadas
+: "${TXHOST_DEFAULT_DBUSER:?}"
+: "${TXHOST_DEFAULT_DBPASS:?}"
+: "${TXHOST_DEFAULT_DBHOST:?}"
+: "${TXHOST_DEFAULT_DBPORT:?}"
+: "${TXHOST_DEFAULT_DBNAME:?}"
+
+# Nome do arquivo a ser processado
+ARQUIVO="/fx-data/scripts-base/server.cfg"
+
+# Substituição com sed
+sed -i \
+  -e "s|\$TXHOST_DEFAULT_DBUSER|${TXHOST_DEFAULT_DBUSER}|g" \
+  -e "s|\$TXHOST_DEFAULT_DBPASS|${TXHOST_DEFAULT_DBPASS}|g" \
+  -e "s|\$TXHOST_DEFAULT_DBHOST|${TXHOST_DEFAULT_DBHOST}|g" \
+  -e "s|\$TXHOST_DEFAULT_DBPORT|${TXHOST_DEFAULT_DBPORT}|g" \
+  -e "s|\$TXHOST_DEFAULT_DBNAME|${TXHOST_DEFAULT_DBNAME}|g" \
+  "$ARQUIVO"
 
 chmod +x /opt/cfx-server/run.sh
 
