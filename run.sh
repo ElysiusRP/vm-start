@@ -16,4 +16,4 @@ fi
 envsubst < /fx-data/scripts-base/server.template.cfg > /fx-data/scripts-base/server.cfg
 
 # Inicia o FXServer
-exec /opt/fxserver/run.sh
+sh /opt/fxserver/run.sh
