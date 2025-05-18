@@ -12,6 +12,8 @@ if [ ! -f /fx-data/scripts-base/server.template.cfg ]; then
   exit 1
 fi
 
+cp -f /fx-data/scripts-base/server.template.cfg /fx-data/scripts-base/server.cfg
+
 # Gera o server.cfg usando envsubst
 envsubst '$DB_USER $DB_PASS $DB_HOST $DB_NAME' < /fx-data/scripts-base/server.cfg
 
