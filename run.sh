@@ -13,7 +13,7 @@ if [ ! -f /fx-data/scripts-base/server.template.cfg ]; then
 fi
 
 # Gera o server.cfg usando envsubst
-envsubst '$DB_USER $DB_PASS $DB_HOST $DB_NAME' > /fx-data/scripts-base/server.cfg
+envsubst '$DB_USER $DB_PASS $DB_HOST $DB_NAME' < /fx-data/scripts-base/server.cfg
 
 chmod +x /opt/cfx-server/run.sh
 
