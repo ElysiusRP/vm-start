@@ -3,6 +3,8 @@ FROM traskin/fxserver:latest
 # Copia seu script de start para o container (opcional)
 COPY start.sh /start.sh
 
+RUN ls -lah /start.sh
+
 # Dá permissão de execução
 RUN chmod +x /start.sh
 
