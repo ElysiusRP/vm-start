@@ -1,6 +1,6 @@
 FROM traskin/fxserver:latest
 
-RUN apk update && apk add --no-cache git
+RUN apk add --no-cache git
 
 # Copia seu script de start para o container (opcional)
 COPY run.sh /run.sh
