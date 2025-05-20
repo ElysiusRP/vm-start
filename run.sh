@@ -6,6 +6,13 @@ while [ ! -d /fx-data ]; do
   sleep 1
 done
 
+
+# loga no git e faz um pull do repositorio em uma branch especifica
+cd /fx-data/scripts-base
+git config --global user.name "txhost"
+git config --global user.email "jvinicius06@gmail.com"
+git pull https://${GIT_TOKEN}@${GIT_URI} ${GIT_PULL_BRANCH} --force
+
 # Verifica se o template existe
 if [ ! -f /fx-data/scripts-base/server.template.cfg ]; then
   echo "❌ Template não encontrado: /fx-data/scripts-base/server.template.cfg"
