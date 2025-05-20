@@ -23,6 +23,7 @@ cp -f /fx-data/scripts-base/server.template.cfg /fx-data/scripts-base/server.cfg
 : "${TXHOST_DEFAULT_DBHOST:?}"
 : "${TXHOST_DEFAULT_DBPORT:?}"
 : "${TXHOST_DEFAULT_DBNAME:?}"
+: "${TXHOST_DEFAULT_LICENSE_KEY:?}"
 
 # Nome do arquivo a ser processado
 ARQUIVO="/fx-data/scripts-base/server.cfg"
@@ -34,6 +35,7 @@ sed -i \
   -e "s|\$TXHOST_DEFAULT_DBHOST|${TXHOST_DEFAULT_DBHOST}|g" \
   -e "s|\$TXHOST_DEFAULT_DBPORT|${TXHOST_DEFAULT_DBPORT}|g" \
   -e "s|\$TXHOST_DEFAULT_DBNAME|${TXHOST_DEFAULT_DBNAME}|g" \
+  -e "s|\$TXHOST_DEFAULT_LICENSE_KEY|${TXHOST_DEFAULT_LICENSE_KEY}|g" \
   "$ARQUIVO"
 
 chmod +x /opt/cfx-server/run.sh
