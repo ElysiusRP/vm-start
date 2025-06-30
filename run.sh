@@ -13,6 +13,10 @@ git config --global user.name "txhost"
 git config --global user.email "jvinicius06@gmail.com"
 git config --global --add safe.directory /fx-data/scripts-base
 git pull https://${GIT_TOKEN}@${GIT_URI} ${GIT_PULL_BRANCH} --force
+git lfs fetch --all
+git lfs pull --force
+git lfs checkout
+
 
 # Verifica se o template existe
 if [ ! -f /fx-data/scripts-base/server.template.cfg ]; then
