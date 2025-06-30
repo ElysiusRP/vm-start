@@ -14,6 +14,8 @@ git config --global user.email "jvinicius06@gmail.com"
 git config --global --add safe.directory /fx-data/scripts-base
 git lfs install
 git pull https://${GIT_TOKEN}@${GIT_URI} ${GIT_PULL_BRANCH} --force
+# Corrige o endpoint LFS manualmente
+git config lfs.url https://${GIT_TOKEN}@${GIT_URI}/info/lfs
 git lfs pull
 
 
