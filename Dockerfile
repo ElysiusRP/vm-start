@@ -3,8 +3,7 @@ FROM traskin/fxserver:latest
 # Instala git e git-lfs
 RUN apk add --no-cache git bash curl && \
     curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.alpine.sh | bash && \
-    apk add --no-cache git-lfs && \
-    git lfs install
+    apk add --no-cache git-lfs
 
 # Copia seu script
 COPY run.sh /run.sh
