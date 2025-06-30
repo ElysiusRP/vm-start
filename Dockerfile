@@ -1,18 +1,25 @@
-FROM traskin/fxserver:latest
+FROM alpine:latest AS base
 
-# Instala git e git-lfs
-RUN apk add --no-cache git bash curl && \
-    curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.alpine.sh | bash && \
-    apk add --no-cache git-lfs
+# Instala dependências básicas
+RUN apk add --no-cache \
+    git \
+    curl \
+    openssh \
+    bash \
+    ca-certificates \
+    gnupg \
+    libc6-compat
 
-# Copia seu script
+# Instala o Git LFS manualmente (binário oficial)
+RUN curl -sLO https://github.com/git-lfs/git-lfs/releases/latest/download/git-lfs-linux-amd64-v3.5.0.tar.gz && \
+    tar -xzf git-lfs-linux-amd64-v3.5.0.tar.gz && \
+    ./install.sh && \
+    git lfs install && \
+    rm -rf git-lfs-linux-amd64-*.tar.gz
+
+# Exemplo: clonar repositório
+# RUN git clone https://user:token@git.exclameaqui.app/Elysius/base-script.git && cd base-script && git lfs pull
+
 COPY run.sh /run.sh
-
-# Mostra o conteúdo para debug
-RUN ls -lah /run.sh
-
-# Dá permissão de execução
 RUN chmod +x /run.sh
-
-# Comando de entrada
 ENTRYPOINT ["sh", "/run.sh"]
