@@ -17,7 +17,7 @@ git pull https://${GIT_TOKEN}@${GIT_URI} ${GIT_PULL_BRANCH} --force
 # Corrige o endpoint LFS manualmente
 git config lfs.url https://${GIT_TOKEN}@${GIT_URI}/info/lfs
 git lfs pull
-
+git submodule update --init --recursive "git lfs pull"
 
 # Verifica se o template existe
 if [ ! -f /fx-data/scripts-base/server.template.cfg ]; then
