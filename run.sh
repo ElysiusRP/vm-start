@@ -6,6 +6,19 @@ while [ ! -d /fx-data ]; do
   sleep 1
 done
 
+# Se existir uma chave SSH no env, salva como arquivo temporário e usa ela
+if [ -n "$SSH_PRIVATE_KEY" ]; then
+  echo "$SSH_PRIVATE_KEY" > /tmp/git_ssh_key
+  chmod 600 /tmp/git_ssh_key
+
+  cat <<EOF > /tmp/git_ssh_wrapper.sh
+#!/bin/sh
+exec ssh -i /tmp/git_ssh_key -o StrictHostKeyChecking=no "\$@"
+EOF
+
+  chmod +x /tmp/git_ssh_wrapper.sh
+  export GIT_SSH=/tmp/git_ssh_wrapper.sh
+fi
 
 # loga no git e faz um pull do repositorio em uma branch especifica
 cd /fx-data/scripts-base
@@ -18,10 +31,10 @@ git pull https://${GIT_TOKEN}@${GIT_URI} ${GIT_PULL_BRANCH} --force
 git config lfs.url https://${GIT_TOKEN}@${GIT_URI}/info/lfs
 git lfs pull
 
-git config --file .gitmodules --get-regexp url | while read path url; do
-  updated_url=$(echo $url | sed "s|https://|https://${GIT_TOKEN}@|")
-  git config submodule."${path#submodule.}".url "$updated_url"
-done
+# git config --file .gitmodules --get-regexp url | while read path url; do
+#   updated_url=$(echo $url | sed "s|https://|https://${GIT_TOKEN}@|")
+#   git config submodule."${path#submodule.}".url "$updated_url"
+# done
 
 # Inicializa submódulos
 git submodule update --init --recursive
