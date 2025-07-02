@@ -18,6 +18,11 @@ git pull https://${GIT_TOKEN}@${GIT_URI} ${GIT_PULL_BRANCH} --force
 git config lfs.url https://${GIT_TOKEN}@${GIT_URI}/info/lfs
 git lfs pull
 
+git config --file .gitmodules --get-regexp url | while read path url; do
+  updated_url=$(echo $url | sed "s|https://|https://${GIT_TOKEN}@|")
+  git config submodule."${path#submodule.}".url "$updated_url"
+done
+
 # Inicializa submódulos
 git submodule update --init --recursive
 
