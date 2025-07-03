@@ -1,8 +1,11 @@
 #!/bin/bash
 
+# Usa o valor do env FX_DATA_PATH ou padrão para /fx-data
+FX_DATA_PATH="${FX_DATA_PATH:-/fx-data}"
+
 # Espera o bind mount ficar disponível
-while [ ! -d /fx-data ]; do
-  echo "Aguardando bind /fx-data..."
+while [ ! -d "$FX_DATA_PATH" ]; do
+  echo "Aguardando bind $FX_DATA_PATH..."
   sleep 1
 done
 
@@ -21,10 +24,10 @@ EOF
 fi
 
 # loga no git e faz um pull do repositorio em uma branch especifica
-cd /fx-data/scripts-base
+cd "$FX_DATA_PATH/scripts-base"
 git config --global user.name "txhost"
 git config --global user.email "jvinicius06@gmail.com"
-git config --global --add safe.directory /fx-data/scripts-base
+git config --global --add safe.directory "$FX_DATA_PATH/scripts-base"
 git lfs install
 git pull https://${GIT_TOKEN}@${GIT_URI} ${GIT_PULL_BRANCH} --force
 # Corrige o endpoint LFS manualmente
@@ -44,15 +47,15 @@ git submodule update --init --recursive
 git submodule foreach --recursive 'git lfs pull'
 
 # Verifica se o template existe
-if [ ! -f /fx-data/scripts-base/server.template.cfg ]; then
-  echo "❌ Template não encontrado: /fx-data/scripts-base/server.template.cfg"
+if [ ! -f "$FX_DATA_PATH/scripts-base/server.template.cfg" ]; then
+  echo "❌ Template não encontrado: $FX_DATA_PATH/scripts-base/server.template.cfg"
   exit 1
 fi
 
-cp -f /fx-data/scripts-base/server.template.cfg /fx-data/scripts-base/server.cfg
+cp -f "$FX_DATA_PATH/scripts-base/server.template.cfg" "$FX_DATA_PATH/scripts-base/server.cfg"
 
 # Gera o server.cfg usando envsubst
-# envsubst '$DB_USER $DB_PASS $DB_HOST $DB_NAME' < /fx-data/scripts-base/server.template.cfg > /fx-data/scripts-base/server.cfg
+# envsubst '$DB_USER $DB_PASS $DB_HOST $DB_NAME' < "$FX_DATA_PATH/scripts-base/server.template.cfg" > "$FX_DATA_PATH/scripts-base/server.cfg"
 
 # Certifique-se de que todas as variáveis estejam exportadas
 : "${TXHOST_DEFAULT_DBUSER:?}"
@@ -63,7 +66,7 @@ cp -f /fx-data/scripts-base/server.template.cfg /fx-data/scripts-base/server.cfg
 : "${TXHOST_DEFAULT_LICENSE_KEY:?}"
 
 # Nome do arquivo a ser processado
-ARQUIVO="/fx-data/scripts-base/server.cfg"
+ARQUIVO="$FX_DATA_PATH/scripts-base/server.cfg"
 
 # Substituição com sed
 sed -i \
