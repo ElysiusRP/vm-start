@@ -35,7 +35,7 @@ git config lfs.url https://${GIT_TOKEN}@${GIT_URI}/info/lfs
 git lfs pull
 
 # 1. Substitui token nas URLs do .gitmodules
-sed -i "s|https://git.exclameaqui.app|https://${GIT_TOKEN}@git.exclameaqui.app|g" .gitmodules
+sed -i "s|https://${GIT_URI}|https://${GIT_TOKEN}@${GIT_URI}|g" .gitmodules
 
 # 2. Sincroniza as URLs locais com o arquivo .gitmodules
 git submodule sync --recursive
