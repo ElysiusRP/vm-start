@@ -49,6 +49,8 @@ git submodule update --init --recursive
 git submodule foreach --recursive '
   url=$(git config --file ../../.gitmodules submodule.$name.url)
   git config submodule.$name.url "$url"
+  git reset --hard
+  git clean -fdx
 '
 
 # 5. Fetch e reset para o branch desejado
