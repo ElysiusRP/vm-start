@@ -17,7 +17,7 @@ fi
 # Prepara chave SSH (se fornecida)
 if [ -n "$SSH_PRIVATE_KEY" ]; then
   mkdir -p ~/.ssh
-  echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+  echo -e "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
   chmod 600 ~/.ssh/id_rsa
   ssh-keyscan -H "$GIT_DOMAIN" >> ~/.ssh/known_hosts
 fi
