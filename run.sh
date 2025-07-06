@@ -14,7 +14,6 @@ if ! command -v ssh >/dev/null 2>&1; then
   exit 1
 fi
 
-
 # Prepara chave SSH (se fornecida)
 if [ -n "$SSH_PRIVATE_KEY" ]; then
   mkdir -p ~/.ssh
