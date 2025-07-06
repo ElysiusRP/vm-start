@@ -23,6 +23,15 @@ EOF
   export GIT_SSH=/tmp/git_ssh_wrapper.sh
 fi
 
+# Cria o .netrc para autenticação automatizada do git-lfs
+cat > ~/.netrc <<EOF
+machine ${GIT_DOMAIN}
+login git
+password ${GIT_TOKEN}
+EOF
+
+chmod 600 ~/.netrc
+
 # loga no git e faz um pull do repositorio em uma branch especifica
 cd "$FX_DATA_PATH/scripts-base"
 git config --global user.name "txhost"
