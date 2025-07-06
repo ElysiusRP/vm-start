@@ -23,6 +23,18 @@ EOF
   export GIT_SSH=/tmp/git_ssh_wrapper.sh
 fi
 
+# ⚠️ Recria chave SSH a partir da variável
+if [ -n "$SSH_PRIVATE_KEY" ]; then
+  mkdir -p ~/.ssh
+  echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+  chmod 600 ~/.ssh/id_rsa
+  ssh-keyscan -H git.cerberus.elysiusrp.com.br >> ~/.ssh/known_hosts
+fi
+
+# Inicia o agente e adiciona a chave
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+
 # loga no git e faz um pull do repositorio em uma branch especifica
 cd "$FX_DATA_PATH/scripts-base"
 git config --global user.name "txhost"
@@ -34,47 +46,38 @@ git pull https://${GIT_TOKEN}@${GIT_URI} ${GIT_PULL_BRANCH} --force --recurse-su
 git config lfs.url https://${GIT_TOKEN}@${GIT_URI}/info/lfs
 git lfs pull
 
+# 1. Converte URLs do .gitmodules para SSH
+sed -i -E "s|(url = )https://${GIT_DOMAIN}/|\\1git@${GIT_DOMAIN}:|g" .gitmodules
 
-# 1. Cria o .netrc para autenticação do git e git-lfs
-cat > ~/.netrc <<EOF
-machine ${GIT_DOMAIN}
-login git
-password ${GIT_TOKEN}
-EOF
-
-chmod 600 ~/.netrc
-
-# 2. Remove qualquer token embutido do .gitmodules (se já foi injetado antes)
-sed -i -E "s|(url = https://)([^@/]+@)?([^ ]+)|\1${GIT_TOKEN}@\3|g" .gitmodules
-
-# 3. Sincroniza URLs
+# 2. Sincroniza configurações locais
 git submodule sync --recursive
 
-# 4. Inicializa submódulos
+# 3. Aplica URLs SSH também no .git/config local
+git submodule foreach --recursive '
+  url=$(git config --file ../../.gitmodules submodule.$name.url)
+  git config submodule.$name.url "$url"
+'
+
+# 4. Inicializa e atualiza os submódulos
 git submodule update --init --recursive
 
-# 5. Garante que o .git/config também usa URL limpa (sem token)
-# git submodule foreach --recursive '
-#   url=$(git config --file ../../.gitmodules submodule.$name.url)
-#   git config submodule.$name.url "$url"
-# '
-git submodule foreach --recursive "
-  git config lfs.url https://${GIT_TOKEN}@$(git config remote.origin.url | sed -E 's|https://([^@/]+@)?||')/info/lfs
-"
-
-# 6. Reset para evitar conflitos locais
+# 5. Reseta e limpa para evitar conflitos
 git submodule foreach --recursive 'git reset --hard && git clean -fd'
 
-# 7. Atualiza submódulos para a branch desejada
 git submodule foreach --recursive "
   git fetch origin ${GIT_PULL_BRANCH} &&
   git checkout ${GIT_PULL_BRANCH} &&
-  git reset --hard origin/${GIT_PULL_BRANCH} &&
-  git lfs checkout ${GIT_PULL_BRANCH}
+  git reset --hard origin/${GIT_PULL_BRANCH}
 "
 
-# 8. Baixa arquivos LFS
-git submodule foreach --recursive 'git lfs pull || true'
+# 7. Corrige o endpoint do LFS para SSH
+git submodule foreach --recursive '
+  LFS_SSH_URL=$(git config remote.origin.url | sed "s|\\.git\$||")/info/lfs
+  git config lfs.url "$LFS_SSH_URL"
+'
+
+# 8. Faz pull dos arquivos LFS
+git submodule foreach --recursive 'git lfs pull'
 
 # Verifica se o template existe
 if [ ! -f "$FX_DATA_PATH/scripts-base/server.template.cfg" ]; then
