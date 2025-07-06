@@ -69,7 +69,8 @@ git submodule foreach --recursive 'git reset --hard && git clean -fd'
 git submodule foreach --recursive "
   git fetch origin ${GIT_PULL_BRANCH} &&
   git checkout ${GIT_PULL_BRANCH} &&
-  git reset --hard origin/${GIT_PULL_BRANCH}
+  git reset --hard origin/${GIT_PULL_BRANCH} &&
+  git lfs checkout ${GIT_PULL_BRANCH}
 "
 
 # 8. Baixa arquivos LFS
