@@ -20,7 +20,11 @@ if [ -n "$SSH_PRIVATE_KEY" ]; then
   echo -e "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
   chmod 600 ~/.ssh/id_rsa
   ssh-keyscan -H "$GIT_DOMAIN" >> ~/.ssh/known_hosts
+  echo "Chave SSH preparada."
+else
+  echo "Nenhuma chave SSH fornecida. Continuando sem autenticação SSH."
 fi
+
 
 # Inicia agente SSH e adiciona a chave
 eval "$(ssh-agent -s)"
