@@ -29,6 +29,8 @@ git config --global user.name "txhost"
 git config --global user.email "jvinicius06@gmail.com"
 git config --global --add safe.directory "$FX_DATA_PATH/scripts-base"
 git lfs install
+git reset --hard # Desfaz quaisquer alterações locais
+git clean -fdx # Remove arquivos não rastreados e diretórios
 git pull https://${GIT_TOKEN}@${GIT_URI} ${GIT_PULL_BRANCH} --force --recurse-submodules
 # Corrige o endpoint LFS manualmente
 git config lfs.url https://${GIT_TOKEN}@${GIT_URI}/info/lfs
