@@ -9,6 +9,12 @@ while [ ! -d "$FX_DATA_PATH" ]; do
   sleep 1
 done
 
+if ! command -v ssh >/dev/null 2>&1; then
+  echo "❌ SSH não encontrado. Verifique se o pacote openssh foi instalado."
+  exit 1
+fi
+
+
 # Prepara chave SSH (se fornecida)
 if [ -n "$SSH_PRIVATE_KEY" ]; then
   mkdir -p ~/.ssh
