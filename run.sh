@@ -29,7 +29,7 @@ git config --global user.name "txhost"
 git config --global user.email "jvinicius06@gmail.com"
 git config --global --add safe.directory "$FX_DATA_PATH/scripts-base"
 git lfs install
-git pull https://${GIT_TOKEN}@${GIT_URI} ${GIT_PULL_BRANCH} --force
+git pull https://${GIT_TOKEN}@${GIT_URI} ${GIT_PULL_BRANCH} --force --recurse-submodules
 # Corrige o endpoint LFS manualmente
 git config lfs.url https://${GIT_TOKEN}@${GIT_URI}/info/lfs
 git lfs pull
@@ -39,6 +39,8 @@ sed -i "s|https://${GIT_URI}|https://${GIT_TOKEN}@${GIT_URI}|g" .gitmodules
 
 # 2. Sincroniza as URLs locais com o arquivo .gitmodules
 git submodule sync --recursive
+
+git submodule foreach --recursive 'git fetch origin'
 
 # 3. Inicializa e atualiza submódulos usando as URLs com token
 git submodule update --init --recursive
