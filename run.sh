@@ -54,10 +54,13 @@ git submodule sync --recursive
 git submodule update --init --recursive
 
 # 5. Garante que o .git/config também usa URL limpa (sem token)
-git submodule foreach --recursive '
-  url=$(git config --file ../../.gitmodules submodule.$name.url)
-  git config submodule.$name.url "$url"
-'
+# git submodule foreach --recursive '
+#   url=$(git config --file ../../.gitmodules submodule.$name.url)
+#   git config submodule.$name.url "$url"
+# '
+git submodule foreach --recursive "
+  git config lfs.url https://${GIT_TOKEN}@$(git config remote.origin.url | sed -E 's|https://([^@/]+@)?||')/info/lfs
+"
 
 # 6. Reset para evitar conflitos locais
 git submodule foreach --recursive 'git reset --hard && git clean -fd'
