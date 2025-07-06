@@ -34,18 +34,29 @@ git pull https://${GIT_TOKEN}@${GIT_URI} ${GIT_PULL_BRANCH} --force --recurse-su
 git config lfs.url https://${GIT_TOKEN}@${GIT_URI}/info/lfs
 git lfs pull
 
-# 1. Substitui token nas URLs do .gitmodules
+# 1. Injeta o token nas URLs
 sed -i -E "s|(url = https://)([^@/]+@)?([^ ]+)|\1${GIT_TOKEN}@\3|g" .gitmodules
 
-# 2. Sincroniza as URLs locais com o arquivo .gitmodules
+# 2. Sincroniza com o .gitmodules
 git submodule sync --recursive
 
-git submodule foreach --recursive 'git fetch origin'
-
-# 3. Inicializa e atualiza submódulos usando as URLs com token
+# 3. Inicializa e atualiza os submódulos
 git submodule update --init --recursive
 
-# 4. Puxa arquivos LFS nos submódulos
+# 4. Aplica o token no .git/config local (para garantir)
+git submodule foreach --recursive '
+  url=$(git config --file ../../.gitmodules submodule.$name.url)
+  git config submodule.$name.url "$url"
+'
+
+# 5. Fetch e reset para o branch desejado
+git submodule foreach --recursive "
+  git fetch origin ${GIT_PULL_BRANCH} &&
+  git checkout ${GIT_PULL_BRANCH} &&
+  git reset --hard origin/${GIT_PULL_BRANCH}
+"
+
+# 6. LFS pull
 git submodule foreach --recursive 'git lfs pull'
 
 # Verifica se o template existe
