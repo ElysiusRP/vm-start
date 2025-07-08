@@ -22,9 +22,10 @@ chmod 600 ~/.git-credentials
 GIT_HTTP_URL="https://${GIT_DOMAIN}/${GIT_REPO}.git"
 git remote set-url origin "$GIT_HTTP_URL"
 
-git fetch origin
-git checkout "$GIT_PULL_BRANCH"
 git reset --hard "origin/$GIT_PULL_BRANCH"
+
+git fetch origin
+-git checkout "$GIT_PULL_BRANCH" -f
 
 git config lfs.url "${GIT_HTTP_URL%.git}/info/lfs"
 git lfs pull
