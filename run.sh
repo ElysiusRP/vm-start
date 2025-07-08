@@ -37,8 +37,11 @@ git config --global user.email "jvinicius06@gmail.com"
 git config --global --add safe.directory "$FX_DATA_PATH/scripts-base"
 git lfs install
 
-# URL SSH
-GIT_SSH_URL="git@${GIT_DOMAIN}:${GIT_REPO}.git"
+# Usa porta customizada no SSH, se fornecida
+if [ -n "$GIT_SSH_PORT" ]; then
+  export GIT_SSH_COMMAND="ssh -p $GIT_SSH_PORT"
+  echo "Usando porta SSH personalizada: $GIT_SSH_PORT"
+fi
 
 # Atualiza origem para SSH e faz pull
 git remote set-url origin "$GIT_SSH_URL"
@@ -50,8 +53,11 @@ git reset --hard "origin/$GIT_PULL_BRANCH"
 git config lfs.url "${GIT_SSH_URL%.git}/info/lfs"
 git lfs pull
 
-# 1. Converte URLs dos submódulos para SSH
-sed -i -E "s|(url = )https://${GIT_DOMAIN}/|\1git@${GIT_DOMAIN}:|g" .gitmodules
+if [ -n "$GIT_SSH_PORT" ]; then
+  sed -i -E "s|(url = )https://${GIT_DOMAIN}/|\1ssh://git@${GIT_DOMAIN}:${GIT_SSH_PORT}/|g" .gitmodules
+else
+  sed -i -E "s|(url = )https://${GIT_DOMAIN}/|\1git@${GIT_DOMAIN}:|g" .gitmodules
+fi
 
 # 2. Sincroniza configurações locais
 git submodule sync --recursive
