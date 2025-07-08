@@ -43,6 +43,8 @@ if [ -n "$GIT_SSH_PORT" ]; then
   echo "Usando porta SSH personalizada: $GIT_SSH_PORT"
 fi
 
+GIT_SSH_URL="ssh://git@${GIT_DOMAIN}:${GIT_SSH_PORT:-2222}/${GIT_REPO}.git"
+
 # Atualiza origem para SSH e faz pull
 git remote set-url origin "$GIT_SSH_URL"
 git fetch origin
