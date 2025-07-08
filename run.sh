@@ -1,96 +1,49 @@
 #!/bin/bash
 
-# Usa o valor do env FX_DATA_PATH ou padrão para /fx-data
 FX_DATA_PATH="${FX_DATA_PATH:-/fx-data}"
 
-# Espera o bind mount ficar disponível
 while [ ! -d "$FX_DATA_PATH" ]; do
   echo "Aguardando bind $FX_DATA_PATH..."
   sleep 1
 done
 
-if ! command -v ssh >/dev/null 2>&1; then
-  echo "❌ SSH não encontrado. Verifique se o pacote openssh foi instalado."
-  exit 1
-fi
-
-# Prepara chave SSH (se fornecida)
-if [ -n "$SSH_PRIVATE_KEY" ]; then
-  mkdir -p ~/.ssh
-  echo -e "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-  chmod 600 ~/.ssh/id_rsa
-  ssh-keyscan -H "$GIT_DOMAIN" >> ~/.ssh/known_hosts
-  echo "Chave SSH preparada."
-else
-  echo "Nenhuma chave SSH fornecida. Continuando sem autenticação SSH."
-fi
-
-
-# Inicia agente SSH e adiciona a chave
-eval "$(ssh-agent -s)"
-ssh-add ~/.ssh/id_rsa
-
-# Configura Git
 cd "$FX_DATA_PATH/scripts-base"
+
 git config --global user.name "txhost"
 git config --global user.email "jvinicius06@gmail.com"
 git config --global --add safe.directory "$FX_DATA_PATH/scripts-base"
 git lfs install
 
-# Usa porta customizada no SSH, se fornecida
-if [ -n "$GIT_SSH_PORT" ]; then
-  export GIT_SSH_COMMAND="ssh -p $GIT_SSH_PORT"
-  echo "Usando porta SSH personalizada: $GIT_SSH_PORT"
-fi
+git config --global credential.helper store
 
-GIT_SSH_URL="ssh://git@${GIT_DOMAIN}:${GIT_SSH_PORT:-2222}/${GIT_REPO}.git"
+echo "https://${GIT_USERNAME}:${GIT_TOKEN}@${GIT_DOMAIN}" > ~/.git-credentials
+chmod 600 ~/.git-credentials
 
-# Atualiza origem para SSH e faz pull
-git remote set-url origin "$GIT_SSH_URL"
+GIT_HTTP_URL="https://${GIT_DOMAIN}/${GIT_REPO}.git"
+git remote set-url origin "$GIT_HTTP_URL"
+
 git fetch origin
 git checkout "$GIT_PULL_BRANCH"
 git reset --hard "origin/$GIT_PULL_BRANCH"
 
-# Corrige URL do LFS principal
-git config lfs.url "${GIT_SSH_URL%.git}/info/lfs"
+git config lfs.url "${GIT_HTTP_URL%.git}/info/lfs"
 git lfs pull
 
-if [ -n "$GIT_SSH_PORT" ]; then
-  sed -i -E "s|(url = )https://${GIT_DOMAIN}/|\1ssh://git@${GIT_DOMAIN}:${GIT_SSH_PORT}/|g" .gitmodules
-else
-  sed -i -E "s|(url = )https://${GIT_DOMAIN}/|\1git@${GIT_DOMAIN}:|g" .gitmodules
-fi
-
-# 2. Sincroniza configurações locais
+# Atualiza e inicializa submódulos com URLs originais, sem alteração
 git submodule sync --recursive
-
-# 3. Aplica as URLs SSH no .git/config local
-git submodule foreach --recursive '
-  url=$(git config --file ../../.gitmodules submodule.$name.url)
-  git config submodule.$name.url "$url"
-'
-
-# 4. Inicializa e atualiza submódulos
 git submodule update --init --recursive
 
-# 5. Reseta submódulos para estado limpo
+# Opcional: resetar submódulos para estado limpo e checar branch
 git submodule foreach --recursive 'git reset --hard && git clean -fd'
-
-# 6. Atualiza submódulos para a branch desejada
 git submodule foreach --recursive "
   git fetch origin ${GIT_PULL_BRANCH} &&
-  git checkout ${GIT_PULL_BRANCH} &&
-  git reset --hard origin/${GIT_PULL_BRANCH}
+  git checkout ${GIT_PULL_BRANCH}
 "
 
-# 7. Corrige endpoint do LFS em cada submódulo
-git submodule foreach --recursive '
-  LFS_SSH_URL=$(git config remote.origin.url | sed "s|\\.git\$||")/info/lfs
-  git config lfs.url "$LFS_SSH_URL"
-'
-
-# 8. Puxa arquivos LFS
+# Atualiza LFS dos submódulos
 git submodule foreach --recursive 'git lfs pull || true'
+
+# Continua o resto do script normalmente...
 
 # 9. Verifica template do servidor
 if [ ! -f "$FX_DATA_PATH/scripts-base/server.template.cfg" ]; then
