@@ -33,15 +33,15 @@ git lfs pull
 git submodule sync --recursive
 git submodule update --init --recursive
 
-# Opcional: resetar submódulos para estado limpo e checar branch
-git submodule foreach --recursive 'git reset --hard && git clean -fd'
+# # Opcional: resetar submódulos para estado limpo e checar branch
+# git submodule foreach --recursive 'git reset --hard && git clean -fd'
 git submodule foreach --recursive "
   git fetch origin ${GIT_PULL_BRANCH} &&
-  git checkout ${GIT_PULL_BRANCH}
+  git checkout ${GIT_PULL_BRANCH} -f
 "
 
-# Atualiza LFS dos submódulos
-git submodule foreach --recursive 'git lfs pull || true'
+# # Atualiza LFS dos submódulos
+git submodule foreach --recursive 'git lfs pull'
 
 # Continua o resto do script normalmente...
 
