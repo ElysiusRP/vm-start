@@ -43,7 +43,7 @@ git submodule foreach --recursive "
 "
 
 # # Atualiza LFS dos submódulos
-git submodule foreach --recursive 'git lfs pull'
+git submodule foreach --recursive 'git pull'
 
 # Continua o resto do script normalmente...
 
