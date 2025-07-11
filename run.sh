@@ -35,15 +35,23 @@ git lfs pull
 git submodule sync --recursive
 git submodule update --init --recursive
 
+git submodule foreach --recursive '
+  echo "Processando $name"
+  rm -f "$(git rev-parse --git-dir)/index.lock"
+  git fetch origin ${GIT_PULL_BRANCH} || true
+  git checkout ${GIT_PULL_BRANCH} -f || true
+  git pull origin ${GIT_PULL_BRANCH} || true
+  git lfs pull || true
+'
 # # Opcional: resetar submódulos para estado limpo e checar branch
 # git submodule foreach --recursive 'git reset --hard && git clean -fd'
-git submodule foreach --recursive "
-  git fetch origin ${GIT_PULL_BRANCH} &&
-  git checkout ${GIT_PULL_BRANCH} -f
-"
+# git submodule foreach --recursive "
+#   git fetch origin ${GIT_PULL_BRANCH} &&
+#   git checkout ${GIT_PULL_BRANCH} -f
+# "
 
 # # Atualiza LFS dos submódulos
-git submodule foreach --recursive 'git pull'
+# git submodule foreach --recursive 'git pull'
 
 # Continua o resto do script normalmente...
 
