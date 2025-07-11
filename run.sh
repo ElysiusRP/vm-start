@@ -31,13 +31,19 @@ git pull origin "$GIT_PULL_BRANCH" -f
 git config lfs.url "${GIT_HTTP_URL%.git}/info/lfs"
 git lfs pull
 
-# Atualiza e inicializa submódulos com URLs originais, sem alteração
+# Limpa locks antes de tudo
+find .git/modules -name index.lock -exec rm -f {} \;
+
+# Atualiza submódulos de forma sequencial
 git submodule sync --recursive
 git submodule update --init --recursive
 
+# Lida com cada submódulo com segurança
 git submodule foreach --recursive '
-  echo "Processando $name"
+  echo "Limpando locks em $name"
   rm -f "$(git rev-parse --git-dir)/index.lock"
+  git reset --hard || true
+  git clean -fdx || true
   git fetch origin ${GIT_PULL_BRANCH} || true
   git checkout ${GIT_PULL_BRANCH} -f || true
   git pull origin ${GIT_PULL_BRANCH} || true
