@@ -23,6 +23,7 @@ GIT_HTTP_URL="https://${GIT_DOMAIN}/${GIT_REPO}.git"
 git remote set-url origin "$GIT_HTTP_URL"
 
 git reset --hard "origin/$GIT_PULL_BRANCH"
+git clean -fdx || true
 
 git fetch origin
 git checkout "$GIT_PULL_BRANCH"
