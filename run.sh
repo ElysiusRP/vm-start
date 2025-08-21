@@ -78,6 +78,7 @@ cp -f "$FX_DATA_PATH/scripts-base/server.template.cfg" "$FX_DATA_PATH/scripts-ba
 : "${TXHOST_DEFAULT_DBPORT:?}"
 : "${TXHOST_DEFAULT_DBNAME:?}"
 : "${TXHOST_DEFAULT_LICENSE_KEY:?}"
+: "${TXHOST_DEFAULT_TEBEX_SECRET:?}"
 
 sed -i \
   -e "s|\$TXHOST_DEFAULT_DBUSER|${TXHOST_DEFAULT_DBUSER}|g" \
@@ -86,6 +87,7 @@ sed -i \
   -e "s|\$TXHOST_DEFAULT_DBPORT|${TXHOST_DEFAULT_DBPORT}|g" \
   -e "s|\$TXHOST_DEFAULT_DBNAME|${TXHOST_DEFAULT_DBNAME}|g" \
   -e "s|\$TXHOST_DEFAULT_LICENSE_KEY|${TXHOST_DEFAULT_LICENSE_KEY}|g" \
+  -e "s|\$TXHOST_DEFAULT_TEBEX_SECRET|${TXHOST_DEFAULT_TEBEX_SECRET}|g" \
   "$FX_DATA_PATH/scripts-base/server.cfg"
 
 # 12. Inicia o servidor FX
