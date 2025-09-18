@@ -9,47 +9,47 @@ done
 
 cd "$FX_DATA_PATH/scripts-base"
 
-git config --global user.name "txhost"
-git config --global user.email "jvinicius06@gmail.com"
-git config --global --add safe.directory "$FX_DATA_PATH/scripts-base"
-git lfs install
+# git config --global user.name "txhost"
+# git config --global user.email "jvinicius06@gmail.com"
+# git config --global --add safe.directory "$FX_DATA_PATH/scripts-base"
+# git lfs install
 
-git config --global credential.helper store
+# git config --global credential.helper store
 
-echo "https://${GIT_USERNAME}:${GIT_TOKEN}@${GIT_DOMAIN}" > ~/.git-credentials
-chmod 600 ~/.git-credentials
+# echo "https://${GIT_USERNAME}:${GIT_TOKEN}@${GIT_DOMAIN}" > ~/.git-credentials
+# chmod 600 ~/.git-credentials
 
-GIT_HTTP_URL="https://${GIT_DOMAIN}/${GIT_REPO}.git"
-git remote set-url origin "$GIT_HTTP_URL"
+# GIT_HTTP_URL="https://${GIT_DOMAIN}/${GIT_REPO}.git"
+# git remote set-url origin "$GIT_HTTP_URL"
 
-git reset --hard "origin/$GIT_PULL_BRANCH"
-git clean -fdx || true
+# git reset --hard "origin/$GIT_PULL_BRANCH"
+# git clean -fdx || true
 
-git fetch origin
-git checkout "$GIT_PULL_BRANCH"
-git pull origin "$GIT_PULL_BRANCH" -f
+# git fetch origin
+# git checkout "$GIT_PULL_BRANCH"
+# git pull origin "$GIT_PULL_BRANCH" -f
 
-git config lfs.url "${GIT_HTTP_URL%.git}/info/lfs"
-git lfs pull
+# git config lfs.url "${GIT_HTTP_URL%.git}/info/lfs"
+# git lfs pull
 
-# Limpa locks antes de tudo
-find .git/modules -name index.lock -exec rm -f {} \;
+# # Limpa locks antes de tudo
+# find .git/modules -name index.lock -exec rm -f {} \;
 
-# Atualiza submódulos de forma sequencial
-git submodule sync --recursive
-git submodule update --init --recursive
+# # Atualiza submódulos de forma sequencial
+# git submodule sync --recursive
+# git submodule update --init --recursive
 
-# Lida com cada submódulo com segurança
-git submodule foreach --recursive '
-  echo "Limpando locks em $name"
-  rm -f "$(git rev-parse --git-dir)/index.lock"
-  git reset --hard || true
-  git clean -fdx || true
-  git fetch origin ${GIT_PULL_BRANCH} || true
-  git checkout ${GIT_PULL_BRANCH} -f || true
-  git pull origin ${GIT_PULL_BRANCH} || true
-  git lfs pull || true
-'
+# # Lida com cada submódulo com segurança
+# git submodule foreach --recursive '
+#   echo "Limpando locks em $name"
+#   rm -f "$(git rev-parse --git-dir)/index.lock"
+#   git reset --hard || true
+#   git clean -fdx || true
+#   git fetch origin ${GIT_PULL_BRANCH} || true
+#   git checkout ${GIT_PULL_BRANCH} -f || true
+#   git pull origin ${GIT_PULL_BRANCH} || true
+#   git lfs pull || true
+# '
 # # Opcional: resetar submódulos para estado limpo e checar branch
 # git submodule foreach --recursive 'git reset --hard && git clean -fd'
 # git submodule foreach --recursive "
