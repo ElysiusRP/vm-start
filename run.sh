@@ -7,6 +7,16 @@ while [ ! -d "$FX_DATA_PATH" ]; do
   sleep 1
 done
 
+git config --global user.name "txhost"
+git config --global user.email "jvinicius06@gmail.com"
+git config --global --add safe.directory "$FX_DATA_PATH/scripts-base"
+git lfs install
+
+git config --global credential.helper store
+
+echo "https://${GIT_USERNAME}:${GIT_TOKEN}@${GIT_DOMAIN}" > ~/.git-credentials
+chmod 600 ~/.git-credentials
+
 cd "$FX_DATA_PATH"
 
 # Se não existir repo git, clona
@@ -21,16 +31,6 @@ cd "$FX_DATA_PATH/scripts-base"
 
 # Bloco de atualização automática do git
 if [ "${AUTOUPDATE}" = "TRUE" ]; then
-  git config --global user.name "txhost"
-  git config --global user.email "jvinicius06@gmail.com"
-  git config --global --add safe.directory "$FX_DATA_PATH/scripts-base"
-  git lfs install
-
-  git config --global credential.helper store
-
-  echo "https://${GIT_USERNAME}:${GIT_TOKEN}@${GIT_DOMAIN}" > ~/.git-credentials
-  chmod 600 ~/.git-credentials
-
   GIT_HTTP_URL="https://${GIT_DOMAIN}/${GIT_REPO}.git"
   git remote set-url origin "$GIT_HTTP_URL"
 
