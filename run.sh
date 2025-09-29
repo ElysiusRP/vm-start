@@ -7,6 +7,16 @@ while [ ! -d "$FX_DATA_PATH" ]; do
   sleep 1
 done
 
+cd "$FX_DATA_PATH"
+
+# Se não existir repo git, clona
+if [ ! -d "$FX_DATA_PATH/scripts-base/.git" ]; then
+  echo "📥 Repositório não encontrado, clonando..."
+  rm -rf "$FX_DATA_PATH/scripts-base" # limpa se existir lixo
+  GIT_HTTP_URL="https://${GIT_DOMAIN}/${GIT_REPO}.git"
+  git clone --recursive -b "$GIT_PULL_BRANCH" "$GIT_HTTP_URL" scripts-base
+fi
+
 cd "$FX_DATA_PATH/scripts-base"
 
 # Bloco de atualização automática do git
@@ -24,12 +34,12 @@ if [ "${AUTOUPDATE}" = "TRUE" ]; then
   GIT_HTTP_URL="https://${GIT_DOMAIN}/${GIT_REPO}.git"
   git remote set-url origin "$GIT_HTTP_URL"
 
-  git reset --hard "origin/$GIT_PULL_BRANCH"
-  git clean -fdx || true
+  # git clean -fdx || true
 
-  git fetch origin
-  git checkout "$GIT_PULL_BRANCH"
-  git pull origin "$GIT_PULL_BRANCH" -f
+  git fetch origin "$GIT_PULL_BRANCH"
+  # git checkout "$GIT_PULL_BRANCH" -f
+  # git reset --hard "origin/$GIT_PULL_BRANCH"
+  git pull origin "$GIT_PULL_BRANCH" --rebase --autostash
 
   git config lfs.url "${GIT_HTTP_URL%.git}/info/lfs"
   git lfs pull
@@ -45,11 +55,8 @@ if [ "${AUTOUPDATE}" = "TRUE" ]; then
   git submodule foreach --recursive '
     echo "Limpando locks em $name"
     rm -f "$(git rev-parse --git-dir)/index.lock"
-    git reset --hard || true
-    git clean -fdx || true
     git fetch origin ${GIT_PULL_BRANCH} || true
-    git checkout ${GIT_PULL_BRANCH} -f || true
-    git pull origin ${GIT_PULL_BRANCH} || true
+    git pull origin ${GIT_PULL_BRANCH} --rebase --autostash || true
     git lfs pull || true
   '
 fi
