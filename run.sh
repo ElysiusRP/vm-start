@@ -53,10 +53,12 @@ if [ "${AUTOUPDATE}" = "TRUE" ]; then
 
   # Lida com cada submódulo com segurança
   git submodule foreach --recursive '
-    echo "Limpando locks em $name"
-    rm -f "$(git rev-parse --git-dir)/index.lock"
-    git fetch origin ${GIT_PULL_BRANCH} || true
-    git pull origin ${GIT_PULL_BRANCH} --rebase --autostash || true
+    branch=$(git config -f $toplevel/.gitmodules submodule.$name.branch)
+    branch=${branch:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")}
+    echo "Atualizando $name para origin/$branch"
+    rm -f "$(git rev-parse --git-dir)/index.lock" || true
+    git fetch origin || true
+    git reset --hard origin/$branch || true
     git lfs pull || true
   '
 fi
