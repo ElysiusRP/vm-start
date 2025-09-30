@@ -92,4 +92,24 @@ sed -i \
 
 # 12. Inicia o servidor FX
 chmod +x /opt/cfx-server/run.sh
-sh /opt/cfx-server/run.sh
+
+# Função para finalizar o servidor graciosamente via RCON
+cleanup() {
+  echo "🔄 Finalizando servidor..."
+  if [ -n "${RCONPASS}" ]; then
+    echo "📡 Enviando comando quit via RCON..."
+    mcrcon -H localhost -P 30120 -p "${RCONPASS}" "quit" || true
+  fi
+  echo "✅ Cleanup concluído"
+  exit 0
+}
+
+# Configura trap para capturar sinais de finalização
+trap cleanup SIGTERM SIGINT SIGQUIT
+
+# Inicia o servidor em background e captura o PID
+sh /opt/cfx-server/run.sh &
+SERVER_PID=$!
+
+# Aguarda o processo terminar
+wait $SERVER_PID
