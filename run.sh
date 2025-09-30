@@ -44,29 +44,21 @@ if [ "${AUTOUPDATE}" = "TRUE" ]; then
   # Limpa locks antes de tudo
   find .git/modules -name index.lock -exec rm -f {} \;
 
-  # Atualiza submódulos
-  git submodule sync --recursive
-  git submodule update --init --recursive --force
-
+  # Remove submódulos sujos rapidamente sem refazer clone
   git submodule foreach --recursive '
-    branch=$(git config -f $toplevel/.gitmodules submodule.$name.branch)
-    branch=${branch:-"main"}
-    echo "Forçando $name para origin/$branch"
+    echo "Limpando $name com stash..."
     rm -f "$(git rev-parse --git-dir)/index.lock" || true
-    git fetch origin || true
-    git checkout -B "$branch" "origin/$branch" || true
-    git lfs pull || true
+    git stash push --include-untracked || true
+    git stash clear || true
   '
-fi
-# # Opcional: resetar submódulos para estado limpo e checar branch
-# git submodule foreach --recursive 'git reset --hard && git clean -fd'
-# git submodule foreach --recursive "
-#   git fetch origin ${GIT_PULL_BRANCH} &&
-#   git checkout ${GIT_PULL_BRANCH} -f
-# "
+  
+  # Agora atualiza para o hash correto do commit principal
+  git submodule sync --recursive
+  git submodule update --recursive
 
-# # Atualiza LFS dos submódulos
-# git submodule foreach --recursive 'git pull'
+  # Força LFS nos submódulos se necessário
+  git submodule foreach --recursive 'git lfs pull || true'
+fi
 
 # Continua o resto do script normalmente...
 
