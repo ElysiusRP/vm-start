@@ -34,12 +34,9 @@ if [ "${AUTOUPDATE}" = "TRUE" ]; then
   GIT_HTTP_URL="https://${GIT_DOMAIN}/${GIT_REPO}.git"
   git remote set-url origin "$GIT_HTTP_URL"
 
-  # git clean -fdx || true
-
+  # Atualiza repo principal ignorando sujeira
   git fetch origin "$GIT_PULL_BRANCH"
-  # git checkout "$GIT_PULL_BRANCH" -f
-  # git reset --hard "origin/$GIT_PULL_BRANCH"
-  git pull origin "$GIT_PULL_BRANCH" --rebase --autostash
+  git checkout -B "$GIT_PULL_BRANCH" "origin/$GIT_PULL_BRANCH"
 
   git config lfs.url "${GIT_HTTP_URL%.git}/info/lfs"
   git lfs pull
@@ -47,18 +44,17 @@ if [ "${AUTOUPDATE}" = "TRUE" ]; then
   # Limpa locks antes de tudo
   find .git/modules -name index.lock -exec rm -f {} \;
 
-  # Atualiza submódulos de forma sequencial
+  # Atualiza submódulos
   git submodule sync --recursive
-  git submodule update --init --recursive
+  git submodule update --init --recursive --force
 
-  # Lida com cada submódulo com segurança
   git submodule foreach --recursive '
     branch=$(git config -f $toplevel/.gitmodules submodule.$name.branch)
-    branch=${branch:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")}
-    echo "Atualizando $name para origin/$branch"
+    branch=${branch:-"main"}
+    echo "Forçando $name para origin/$branch"
     rm -f "$(git rev-parse --git-dir)/index.lock" || true
     git fetch origin || true
-    git reset --hard origin/$branch || true
+    git checkout -B "$branch" "origin/$branch" || true
     git lfs pull || true
   '
 fi
