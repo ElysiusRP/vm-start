@@ -8,7 +8,7 @@ RUN apk add --no-cache \
         git \
         git-lfs \
         openssh \
-        mcrcon
+        rcon
 
 # # Baixa o Git LFS e extrai corretamente
 # RUN curl -L -o git-lfs.tar.gz https://github.com/git-lfs/git-lfs/releases/download/v${GIT_LFS_VERSION}/git-lfs-linux-amd64-v${GIT_LFS_VERSION}.tar.gz && \
