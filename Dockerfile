@@ -1,6 +1,7 @@
 FROM traskin/fxserver:latest
 
 ENV GIT_LFS_VERSION=3.5.0
+ENV TZ=America/Sao_Paulo
 
 RUN apk add --no-cache \
         build-base \
