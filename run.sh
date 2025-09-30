@@ -98,7 +98,13 @@ cleanup() {
   echo "🔄 Finalizando servidor..."
   if [ -n "${RCONPASS}" ]; then
     echo "📡 Enviando comando quit via RCON..."
-    rcon -H localhost -p 30120 -P "${RCONPASS}" quit || true
+
+    if rcon -H 127.0.0.1 -p 30120 -P "${RCONPASS}" quit; then
+      echo "✅ Comando quit enviado com sucesso."
+      sleep 10
+    else
+      echo "⚠️ Falha ao enviar comando quit via RCON."
+    fi
   fi
   echo "✅ Cleanup concluído"
   exit 0
