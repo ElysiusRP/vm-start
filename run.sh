@@ -34,6 +34,9 @@ if [ "${AUTOUPDATE}" = "TRUE" ]; then
   GIT_HTTP_URL="https://${GIT_DOMAIN}/${GIT_REPO}.git"
   git remote set-url origin "$GIT_HTTP_URL"
 
+  git stash push --include-untracked || true
+  git stash clear || true
+
   # Atualiza repo principal ignorando sujeira
   git fetch origin "$GIT_PULL_BRANCH"
   git checkout -B "$GIT_PULL_BRANCH" "origin/$GIT_PULL_BRANCH"
@@ -97,13 +100,24 @@ chmod +x /opt/cfx-server/run.sh
 cleanup() {
   echo "🔄 Finalizando servidor..."
   if [ -n "${RCONPASS}" ]; then
-    echo "📡 Enviando comando quit via RCON..."
-
-    if rcon -H 127.0.0.1 -p 30120 -P "${RCONPASS}" quit; then
-      echo "✅ Comando quit enviado com sucesso."
-      sleep 10
+    echo "📡 Tentando enviar comando quit via RCON..."
+    
+    # Aguarda um pouco para garantir que RCON esteja pronto
+    sleep 2
+    
+    # Tenta diferentes configurações de RCON
+    if rcon -H 127.0.0.1 -p 30120 -P "${RCONPASS}" quit 2>/dev/null; then
+      echo "✅ Comando quit enviado com sucesso via 127.0.0.1:30120"
+      sleep 5
+    elif rcon -H localhost -p 30120 -P "${RCONPASS}" quit 2>/dev/null; then
+      echo "✅ Comando quit enviado com sucesso via localhost:30120"
+      sleep 5
+    elif rcon -H 127.0.0.1 -p 30121 -P "${RCONPASS}" quit 2>/dev/null; then
+      echo "✅ Comando quit enviado com sucesso via 127.0.0.1:30121"
+      sleep 5
     else
-      echo "⚠️ Falha ao enviar comando quit via RCON."
+      echo "⚠️ Falha ao enviar comando quit via RCON - tentando kill gracioso"
+      sleep 2
     fi
   fi
   echo "✅ Cleanup concluído"
