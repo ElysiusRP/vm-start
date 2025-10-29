@@ -128,7 +128,23 @@ sed -i \
 
 # Inicia o servidor FiveM diretamente com o executável correto
 cd "$FX_DATA_PATH/scripts-base"
-/opt/cfx-server/FXServer +exec server.cfg &
+
+# Verifica se o executável existe e suas permissões
+ls -la /opt/cfx-server/
+echo "Verificando executáveis do FiveM..."
+if [ -f "/opt/cfx-server/run.sh" ]; then
+    echo "Usando /opt/cfx-server/run.sh"
+    chmod +x /opt/cfx-server/run.sh
+    /opt/cfx-server/run.sh &
+elif [ -f "/opt/cfx-server/FXServer" ]; then
+    echo "Usando /opt/cfx-server/FXServer"
+    chmod +x /opt/cfx-server/FXServer
+    /opt/cfx-server/FXServer +exec server.cfg &
+else
+    echo "❌ Nenhum executável do FiveM encontrado!"
+    exit 1
+fi
+
 SERVER_PID=$!
 
 # Aguarda o processo terminar

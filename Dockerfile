@@ -13,23 +13,22 @@ FROM alpine:latest
 # Copia o rootfs completo do FiveM
 COPY --from=fivem-base /alpine/ /
 
-# Remove repositórios customizados problemáticos do FiveM
-# RUN rm -f /etc/apk/repositories && \
-#     echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/main" > /etc/apk/repositories && \
-#     echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/apk/repositories && \
-#     apk update
+# Remove repositórios customizados problemáticos do FiveM e usa versão compatível
+RUN rm -f /etc/apk/repositories && \
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.16/main" > /etc/apk/repositories && \
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.16/community" >> /etc/apk/repositories && \
+    apk update
 
 ENV GIT_LFS_VERSION=3.5.0
 ENV TZ=America/Sao_Paulo
 
-# Instala dependências adicionais
+# Instala dependências adicionais compatíveis
 RUN apk add --no-cache \
         bash \
-        build-base \
         git \
         git-lfs \
         openssh \
-        rcon
+        ca-certificates
 
 # Copia seu script
 COPY run.sh /run.sh
