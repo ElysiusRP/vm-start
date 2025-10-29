@@ -18,11 +18,15 @@ RUN apk add --no-cache \
 RUN mkdir -p /opt/cfx-server && \
     curl -L -o /tmp/fx.tar.xz \
     "https://runtime.fivem.net/artifacts/fivem/build_proot_linux/master/21547-0b6d5de3902cda6dd91be0c489d9b7243e554bb1/fx.tar.xz" && \
-    cd /opt/cfx-server && \
-    tar -xf /tmp/fx.tar.xz --strip-components=1 && \
-    rm /tmp/fx.tar.xz && \
-    ls -la /opt/cfx-server/ && \
-    chmod +x /opt/cfx-server/FXServer
+    cd /tmp && \
+    tar -xf fx.tar.xz && \
+    find /tmp -name "FXServer" -type f && \
+    find /tmp -name "run.sh" -type f && \
+    ls -la /tmp/alpine/opt/ && \
+    cp -r /tmp/alpine/opt/cfx-server/* /opt/cfx-server/ 2>/dev/null || true && \
+    find /opt/cfx-server -name "FXServer" -type f && \
+    chmod +x /opt/cfx-server/FXServer 2>/dev/null || chmod +x /opt/cfx-server/run.sh 2>/dev/null || true && \
+    rm -rf /tmp/fx.tar.xz /tmp/alpine
 
 # Copia seu script
 COPY run.sh /run.sh
