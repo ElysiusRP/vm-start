@@ -94,17 +94,16 @@ sed -i \
   "$FX_DATA_PATH/scripts-base/server.cfg"
 
 # 12. Inicia o servidor FX
-chmod +x /opt/cfx-server/run.sh
 
 # Função para finalizar o servidor graciosamente via RCON
 # cleanup() {
 #   echo "🔄 Finalizando servidor..."
 #   if [ -n "${RCONPASS}" ]; then
 #     echo "📡 Tentando enviar comando quit via RCON..."
-    
+#     
 #     # Aguarda um pouco para garantir que RCON esteja pronto
 #     sleep 2
-    
+#     
 #     # Tenta diferentes configurações de RCON
 #     if rcon -H 127.0.0.1 -p 30120 -P "${RCONPASS}" quit 2>/dev/null; then
 #       echo "✅ Comando quit enviado com sucesso via 127.0.0.1:30120"
@@ -127,9 +126,10 @@ chmod +x /opt/cfx-server/run.sh
 # Configura trap para capturar sinais de finalização
 # trap cleanup SIGTERM SIGINT SIGQUIT
 
-# Inicia o servidor em background e captura o PID
-sh /opt/cfx-server/run.sh &
-# SERVER_PID=$!
+# Inicia o servidor FiveM diretamente com o executável correto
+cd "$FX_DATA_PATH/scripts-base"
+/opt/cfx-server/FXServer +exec server.cfg &
+SERVER_PID=$!
 
 # Aguarda o processo terminar
-# wait $SERVER_PID
+wait $SERVER_PID

@@ -20,7 +20,9 @@ RUN mkdir -p /opt/cfx-server && \
     "https://runtime.fivem.net/artifacts/fivem/build_proot_linux/master/21547-0b6d5de3902cda6dd91be0c489d9b7243e554bb1/fx.tar.xz" && \
     cd /opt/cfx-server && \
     tar -xf /tmp/fx.tar.xz --strip-components=1 && \
-    rm /tmp/fx.tar.xz
+    rm /tmp/fx.tar.xz && \
+    ls -la /opt/cfx-server/ && \
+    chmod +x /opt/cfx-server/FXServer
 
 # Copia seu script
 COPY run.sh /run.sh
