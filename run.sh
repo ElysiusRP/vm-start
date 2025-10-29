@@ -97,39 +97,39 @@ sed -i \
 chmod +x /opt/cfx-server/run.sh
 
 # Função para finalizar o servidor graciosamente via RCON
-cleanup() {
-  echo "🔄 Finalizando servidor..."
-  if [ -n "${RCONPASS}" ]; then
-    echo "📡 Tentando enviar comando quit via RCON..."
+# cleanup() {
+#   echo "🔄 Finalizando servidor..."
+#   if [ -n "${RCONPASS}" ]; then
+#     echo "📡 Tentando enviar comando quit via RCON..."
     
-    # Aguarda um pouco para garantir que RCON esteja pronto
-    sleep 2
+#     # Aguarda um pouco para garantir que RCON esteja pronto
+#     sleep 2
     
-    # Tenta diferentes configurações de RCON
-    if rcon -H 127.0.0.1 -p 30120 -P "${RCONPASS}" quit 2>/dev/null; then
-      echo "✅ Comando quit enviado com sucesso via 127.0.0.1:30120"
-      sleep 5
-    elif rcon -H localhost -p 30120 -P "${RCONPASS}" quit 2>/dev/null; then
-      echo "✅ Comando quit enviado com sucesso via localhost:30120"
-      sleep 5
-    elif rcon -H 127.0.0.1 -p 30121 -P "${RCONPASS}" quit 2>/dev/null; then
-      echo "✅ Comando quit enviado com sucesso via 127.0.0.1:30121"
-      sleep 5
-    else
-      echo "⚠️ Falha ao enviar comando quit via RCON - tentando kill gracioso"
-      sleep 2
-    fi
-  fi
-  echo "✅ Cleanup concluído"
-  exit 0
-}
+#     # Tenta diferentes configurações de RCON
+#     if rcon -H 127.0.0.1 -p 30120 -P "${RCONPASS}" quit 2>/dev/null; then
+#       echo "✅ Comando quit enviado com sucesso via 127.0.0.1:30120"
+#       sleep 5
+#     elif rcon -H localhost -p 30120 -P "${RCONPASS}" quit 2>/dev/null; then
+#       echo "✅ Comando quit enviado com sucesso via localhost:30120"
+#       sleep 5
+#     elif rcon -H 127.0.0.1 -p 30121 -P "${RCONPASS}" quit 2>/dev/null; then
+#       echo "✅ Comando quit enviado com sucesso via 127.0.0.1:30121"
+#       sleep 5
+#     else
+#       echo "⚠️ Falha ao enviar comando quit via RCON - tentando kill gracioso"
+#       sleep 2
+#     fi
+#   fi
+#   echo "✅ Cleanup concluído"
+#   exit 0
+# }
 
 # Configura trap para capturar sinais de finalização
-trap cleanup SIGTERM SIGINT SIGQUIT
+# trap cleanup SIGTERM SIGINT SIGQUIT
 
 # Inicia o servidor em background e captura o PID
 sh /opt/cfx-server/run.sh &
-SERVER_PID=$!
+# SERVER_PID=$!
 
 # Aguarda o processo terminar
-wait $SERVER_PID
+# wait $SERVER_PID
