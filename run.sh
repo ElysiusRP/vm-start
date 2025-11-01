@@ -139,13 +139,13 @@ echo "Verificando executáveis do FiveM..."
 # elif [ -f "/opt/cfx-server/FXServer" ]; then
 echo "Usando /opt/cfx-server/FXServer"
 chmod +x /opt/cfx-server/FXServer
-/opt/cfx-server/FXServer +exec server.cfg +set sv_logLevel 1 +set con_verboseLevel 1 +set net_logLevel 1 &
+/opt/cfx-server/FXServer +exec server.cfg +set sv_logLevel 1 +set con_verboseLevel 1 +set net_logLevel 1
 # else
 #     echo "❌ Nenhum executável do FiveM encontrado!"
 #     exit 1
 # fi
 
-SERVER_PID=$!
+# SERVER_PID=$!
 
 # Aguarda o processo terminar
-wait $SERVER_PID
+# wait $SERVER_PID
