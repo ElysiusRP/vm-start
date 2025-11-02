@@ -12,7 +12,7 @@ FROM debian:bookworm-slim
 ENV TZ=America/Sao_Paulo
 
 RUN apt-get update && apt-get install -y \
-    bash git git-lfs openssh curl ca-certificates tzdata \
+    bash git git-lfs openssh-client curl ca-certificates tzdata \
     libatomic1 libstdc++6 libgcc-s1 && \
     rm -rf /var/lib/apt/lists/*
 
