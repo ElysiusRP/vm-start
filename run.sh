@@ -139,7 +139,7 @@ echo "Verificando executáveis do FiveM..."
 # elif [ -f "/opt/cfx-server/FXServer" ]; then
 echo "Usando /opt/cfx-server/FXServer"
 chmod +x /opt/cfx-server/FXServer
-/opt/cfx-server/FXServer +set sv_logLevel 1 +set con_verboseLevel 1 +exec server.cfg
+/opt/cfx-server/FXServer +set sv_logLevel 1 +exec server.cfg
 # else
 #     echo "❌ Nenhum executável do FiveM encontrado!"
 #     exit 1
