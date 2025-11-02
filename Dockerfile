@@ -3,7 +3,7 @@ FROM alpine:latest AS fivem-base
 # Baixa e extrai o FiveM completo (rootfs) - versão mais antiga
 RUN apk add --no-cache curl && \
     curl -L -o /tmp/fx.tar.xz \
-    "https://runtime.fivem.net/artifacts/fivem/build_proot_linux/master/18884-6a796486ab67e507d8c4107f9d39d2c8ff507bf7/fx.tar.xz" && \
+    "https://runtime.fivem.net/artifacts/fivem/build_proot_linux/master/21547-0b6d5de3902cda6dd91be0c489d9b7243e554bb1/fx.tar.xz" && \
     cd / && \
     tar -xf /tmp/fx.tar.xz && \
     rm /tmp/fx.tar.xz
