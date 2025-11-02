@@ -134,7 +134,7 @@ ls -la /opt/cfx-server/
 echo "Verificando executáveis do FiveM..."
 if [ -f "/opt/cfx-server/run.sh" ]; then
     echo "Usando /opt/cfx-server/run.sh"
-    chmod +x /opt/cfx-server/run.sh
+    chmod +x /opt/cfx-server/run.sh &
     /opt/cfx-server/run.sh &
 elif [ -f "/opt/cfx-server/FXServer" ]; then
     echo "Usando /opt/cfx-server/FXServer"
@@ -145,7 +145,7 @@ else
     exit 1
 fi
 
-# SERVER_PID=$!
+SERVER_PID=$!
 
-# # Aguarda o processo terminar
-# wait $SERVER_PID
+# Aguarda o processo terminar
+wait $SERVER_PID
