@@ -14,10 +14,10 @@ FROM alpine:latest
 COPY --from=fivem-base /alpine/ /
 
 # Remove repositórios customizados problemáticos do FiveM e usa versão compatível
-RUN rm -f /etc/apk/repositories && \
-    echo "http://dl-cdn.alpinelinux.org/alpine/v3.16/main" > /etc/apk/repositories && \
-    echo "http://dl-cdn.alpinelinux.org/alpine/v3.16/community" >> /etc/apk/repositories && \
-    apk update
+# RUN rm -f /etc/apk/repositories && \
+#     echo "http://dl-cdn.alpinelinux.org/alpine/v3.16/main" > /etc/apk/repositories && \
+#     echo "http://dl-cdn.alpinelinux.org/alpine/v3.16/community" >> /etc/apk/repositories && \
+#     apk update
 
 ENV GIT_LFS_VERSION=3.5.0
 ENV TZ=America/Sao_Paulo
