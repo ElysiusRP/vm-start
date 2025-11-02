@@ -26,6 +26,8 @@ ENV TZ=America/Sao_Paulo
 RUN apk add --no-cache \
         bash \
         git \
+        curl \
+        libcurl \
         git-lfs \
         openssh \
         ca-certificates
