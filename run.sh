@@ -134,7 +134,7 @@ ls -la /opt/cfx-server/
 echo "Verificando executáveis do FiveM..."
 if [ -f "/opt/cfx-server/run.sh" ]; then
     echo "Usando /opt/cfx-server/run.sh"
-    chmod +x /opt/cfx-server/run.sh &
+    chmod +x /opt/cfx-server/run.sh +set sv_logLevel 1 +set con_verboseLevel 1 +set net_logLevel 1 &
     /opt/cfx-server/run.sh &
 elif [ -f "/opt/cfx-server/FXServer" ]; then
     echo "Usando /opt/cfx-server/FXServer"
