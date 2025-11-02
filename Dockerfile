@@ -5,7 +5,8 @@ RUN apt-get update && apt-get install -y curl xz-utils && \
     "https://runtime.fivem.net/artifacts/fivem/build_proot_linux/master/16973-17387507bbccc861881eff2caacbf6974e1c5cbe/fx.tar.xz" && \
     mkdir -p /opt/cfx-server && \
     tar -xf /tmp/fx.tar.xz -C /opt/cfx-server && \
-    rm /tmp/fx.tar.xz
+    mv /opt/cfx-server/alpine/opt/cfx-server/* /opt/cfx-server/ && \
+    rm -rf /opt/cfx-server/alpine /tmp/fx.tar.xz
 
 FROM debian:bookworm-slim
 
