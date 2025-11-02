@@ -12,7 +12,7 @@ ENV TZ=America/Sao_Paulo
 ENV GIT_LFS_VERSION=3.5.0
 
 
-Remove repositórios customizados problemáticos do FiveM e usa versão compatível
+#Remove repositórios customizados problemáticos do FiveM e usa versão compatível
 RUN rm -f /etc/apk/repositories && \
     echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/main" > /etc/apk/repositories && \
     echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/apk/repositories && \
