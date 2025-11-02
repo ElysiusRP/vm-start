@@ -7,9 +7,26 @@ while [ ! -d "$FX_DATA_PATH" ]; do
   sleep 1
 done
 
+# Verifica se git está disponível
+echo "Verificando git..."
+which git
+git --version
+
+# Usa git que vem com o FiveM se disponível
+if [ -f "/usr/bin/git" ]; then
+    export PATH="/usr/bin:$PATH"
+fi
+
 git config --global user.name "txhost"
 git config --global user.email "jvinicius06@gmail.com"
 git config --global --add safe.directory "$FX_DATA_PATH/scripts-base"
+
+# Tenta instalar git-lfs se não existir
+if ! command -v git-lfs &> /dev/null; then
+    echo "git-lfs não encontrado, tentando instalar..."
+    apk add --no-cache git-lfs || echo "Falha ao instalar git-lfs"
+fi
+
 git lfs install
 
 git config --global credential.helper store
