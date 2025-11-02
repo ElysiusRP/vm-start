@@ -15,8 +15,8 @@ COPY --from=fivem-base /alpine/ /
 
 # Remove repositórios customizados problemáticos do FiveM e usa versão compatível
 RUN rm -f /etc/apk/repositories && \
-    echo "http://dl-cdn.alpinelinux.org/alpine/latest/main" > /etc/apk/repositories && \
-    echo "http://dl-cdn.alpinelinux.org/alpine/latest/community" >> /etc/apk/repositories && \
+    echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/main" > /etc/apk/repositories && \
+    echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/apk/repositories && \
     apk update
 
 ENV GIT_LFS_VERSION=3.5.0
