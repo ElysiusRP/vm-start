@@ -110,6 +110,13 @@ sed -i \
   -e "s|\$TXHOST_DEFAULT_TEBEX_SECRET|${TXHOST_DEFAULT_TEBEX_SECRET}|g" \
   "$FX_DATA_PATH/scripts-base/server.cfg"
 
+# Adiciona exec prxye.cfg se a variável de ambiente estiver definida
+if [ -n "$ENABLE_PROXYE" ]; then
+  echo "" >> "$FX_DATA_PATH/scripts-base/server.cfg"
+  echo "exec proxye.cfg" >> "$FX_DATA_PATH/scripts-base/server.cfg"
+  echo "✅ Adicionado 'exec prxye.cfg' ao server.cfg"
+fi
+
 # 12. Inicia o servidor FX
 
 # Função para finalizar o servidor graciosamente via RCON
