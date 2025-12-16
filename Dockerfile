@@ -33,7 +33,8 @@ RUN git lfs install --system \
     && mkdir -p /mnt/fx_data
 
 COPY run.sh /run.sh
-RUN chmod +x /run.sh
+COPY autoupdate.sh /autoupdate.sh
+RUN chmod +x /run.sh /autoupdate.sh
 
 EXPOSE 30120/tcp 30120/udp 40120
 WORKDIR /opt/cfx-server/

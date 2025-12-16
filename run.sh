@@ -100,6 +100,14 @@ elif [ "${AUTOUPDATE}" = "TRUE" ] && [ ! -d ".git" ]; then
   echo "⚠️ AUTOUPDATE habilitado mas não há repositório git válido - pulando atualização"
 fi
 
+# Inicia o script de auto-update em background (verifica a cada 1 minuto)
+if [ "${AUTOUPDATE}" = "TRUE" ]; then
+  echo "🔄 Iniciando monitoramento de atualizações em background..."
+  /autoupdate.sh &
+  AUTOUPDATE_PID=$!
+  echo "✅ Auto-update iniciado (PID: $AUTOUPDATE_PID)"
+fi
+
 # Continua o resto do script normalmente...
 
 # 9. Verifica template do servidor
