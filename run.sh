@@ -36,6 +36,12 @@ chmod 600 ~/.git-credentials
 
 cd "$FX_DATA_PATH"
 
+# Verifica se a pasta scripts-base existe, se não existir, cria
+if [ ! -d "$FX_DATA_PATH/scripts-base" ]; then
+  echo "📁 Pasta scripts-base não encontrada, criando..."
+  mkdir -p "$FX_DATA_PATH/scripts-base"
+fi
+
 # Se não existir repo git, clona
 if [ ! -d "$FX_DATA_PATH/scripts-base/.git" ]; then
   echo "📥 Repositório não encontrado, clonando..."
