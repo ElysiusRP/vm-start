@@ -47,7 +47,18 @@ if [ ! -d "$FX_DATA_PATH/scripts-base/.git" ]; then
   echo "📥 Repositório não encontrado, clonando..."
   rm -rf "$FX_DATA_PATH/scripts-base" # limpa se existir lixo
   GIT_HTTP_URL="https://${GIT_DOMAIN}/${GIT_REPO}.git"
-  git clone --recursive -b "$GIT_PULL_BRANCH" "$GIT_HTTP_URL" scripts-base
+  if git clone --recursive -b "$GIT_PULL_BRANCH" "$GIT_HTTP_URL" scripts-base; then
+    echo "✅ Repositório clonado com sucesso"
+  else
+    echo "❌ Falha ao clonar repositório, criando pasta vazia"
+    mkdir -p "$FX_DATA_PATH/scripts-base"
+  fi
+fi
+
+# Garante que a pasta existe antes de tentar acessá-la
+if [ ! -d "$FX_DATA_PATH/scripts-base" ]; then
+  echo "📁 Criando pasta scripts-base..."
+  mkdir -p "$FX_DATA_PATH/scripts-base"
 fi
 
 cd "$FX_DATA_PATH/scripts-base"
