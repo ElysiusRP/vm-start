@@ -119,24 +119,17 @@ fi
 # 10. Copia template
 cp -f "$FX_DATA_PATH/scripts-base/server.template.cfg" "$FX_DATA_PATH/scripts-base/server.cfg"
 
-# 11. Substitui variáveis no server.cfg
-: "${TXHOST_DEFAULT_DBUSER:?}"
-: "${TXHOST_DEFAULT_DBPASS:?}"
-: "${TXHOST_DEFAULT_DBHOST:?}"
-: "${TXHOST_DEFAULT_DBPORT:?}"
-: "${TXHOST_DEFAULT_DBNAME:?}"
-: "${TXHOST_DEFAULT_LICENSE_KEY:?}"
-: "${TXHOST_DEFAULT_TEBEX_SECRET:?}"
-
-sed -i \
-  -e "s|\$TXHOST_DEFAULT_DBUSER|${TXHOST_DEFAULT_DBUSER}|g" \
-  -e "s|\$TXHOST_DEFAULT_DBPASS|${TXHOST_DEFAULT_DBPASS}|g" \
-  -e "s|\$TXHOST_DEFAULT_DBHOST|${TXHOST_DEFAULT_DBHOST}|g" \
-  -e "s|\$TXHOST_DEFAULT_DBPORT|${TXHOST_DEFAULT_DBPORT}|g" \
-  -e "s|\$TXHOST_DEFAULT_DBNAME|${TXHOST_DEFAULT_DBNAME}|g" \
-  -e "s|\$TXHOST_DEFAULT_LICENSE_KEY|${TXHOST_DEFAULT_LICENSE_KEY}|g" \
-  -e "s|\$TXHOST_DEFAULT_TEBEX_SECRET|${TXHOST_DEFAULT_TEBEX_SECRET}|g" \
-  "$FX_DATA_PATH/scripts-base/server.cfg"
+# 11. Substitui automaticamente todas as variáveis TXHOST_DEFAULT_* no server.cfg
+echo "🔄 Substituindo variáveis TXHOST_DEFAULT_* no server.cfg..."
+for var in $(env | grep '^TXHOST_DEFAULT_' | cut -d= -f1); do
+  value="${!var}"
+  if [ -n "$value" ]; then
+    sed -i "s|\$$var|$value|g" "$FX_DATA_PATH/scripts-base/server.cfg"
+    echo "  ✅ $var substituído"
+  else
+    echo "  ⚠️ $var está vazio, ignorando..."
+  fi
+done
 
 # Adiciona exec prxye.cfg se a variável de ambiente estiver definida
 if [ -n "$ENABLE_PROXYE" ]; then
