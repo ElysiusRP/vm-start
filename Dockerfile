@@ -29,9 +29,6 @@ RUN apk add --no-cache \
     musl-utils \
     openssl
 
-# Remove bibliotecas conflitantes do FiveM depois da instalação
-RUN rm -f /usr/libexec/git-core/git-remote-http* || true
-
 RUN git lfs install --system \
     && mkdir -p /mnt/fx_data
 
