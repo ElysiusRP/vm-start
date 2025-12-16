@@ -64,7 +64,8 @@ fi
 cd "$FX_DATA_PATH/scripts-base"
 
 # Bloco de atualização automática do git
-if [ "${AUTOUPDATE}" = "TRUE" ]; then
+if [ "${AUTOUPDATE}" = "TRUE" ] && [ -d ".git" ]; then
+  echo "🔄 Iniciando atualização automática do repositório..."
   GIT_HTTP_URL="https://${GIT_DOMAIN}/${GIT_REPO}.git"
   git remote set-url origin "$GIT_HTTP_URL"
 
@@ -79,7 +80,7 @@ if [ "${AUTOUPDATE}" = "TRUE" ]; then
   git lfs pull
 
   # Limpa locks antes de tudo
-  find .git/modules -name index.lock -exec rm -f {} \;
+  find .git/modules -name index.lock -exec rm -f {} \; 2>/dev/null || true
 
   # Remove submódulos sujos rapidamente sem refazer clone
   git submodule foreach --recursive '
@@ -95,6 +96,8 @@ if [ "${AUTOUPDATE}" = "TRUE" ]; then
 
   # Força LFS nos submódulos se necessário
   git submodule foreach --recursive 'git lfs pull || true'
+elif [ "${AUTOUPDATE}" = "TRUE" ] && [ ! -d ".git" ]; then
+  echo "⚠️ AUTOUPDATE habilitado mas não há repositório git válido - pulando atualização"
 fi
 
 # Continua o resto do script normalmente...

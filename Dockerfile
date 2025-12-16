@@ -12,12 +12,14 @@ ENV TZ=America/Sao_Paulo
 ENV GIT_LFS_VERSION=3.5.0
 
 
-#Remove repositórios customizados problemáticos do FiveM e usa versão compatível
+# Remove repositórios customizados problemáticos do FiveM e usa versão compatível
 RUN rm -f /etc/apk/repositories && \
-    echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/main" > /etc/apk/repositories && \
-    echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/community" >> /etc/apk/repositories && \
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.18/main" > /etc/apk/repositories && \
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.18/community" >> /etc/apk/repositories && \
     apk update
 
+# Remove bibliotecas conflitantes do FiveM antes de instalar do Alpine
+RUN rm -f /usr/lib/libcurl* /usr/lib/libssl* /usr/lib/libcrypto* || true
 
 RUN apk add --no-cache \
     bash \
@@ -26,7 +28,8 @@ RUN apk add --no-cache \
     git-lfs \
     openssh \
     ca-certificates \
-    musl-utils
+    musl-utils \
+    openssl
 
 RUN git lfs install --system \
     && mkdir -p /mnt/fx_data
