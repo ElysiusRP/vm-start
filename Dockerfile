@@ -18,9 +18,7 @@ RUN rm -f /etc/apk/repositories && \
     echo "http://dl-cdn.alpinelinux.org/alpine/v3.18/community" >> /etc/apk/repositories && \
     apk update
 
-# Remove bibliotecas conflitantes do FiveM antes de instalar do Alpine
-RUN rm -f /usr/lib/libcurl* /usr/lib/libssl* /usr/lib/libcrypto* || true
-
+# Instala pacotes primeiro
 RUN apk add --no-cache \
     bash \
     git \
@@ -30,6 +28,9 @@ RUN apk add --no-cache \
     ca-certificates \
     musl-utils \
     openssl
+
+# Remove bibliotecas conflitantes do FiveM depois da instalação
+RUN rm -f /usr/libexec/git-core/git-remote-http* || true
 
 RUN git lfs install --system \
     && mkdir -p /mnt/fx_data
