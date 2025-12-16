@@ -121,8 +121,7 @@ cp -f "$FX_DATA_PATH/scripts-base/server.template.cfg" "$FX_DATA_PATH/scripts-ba
 
 # 11. Substitui automaticamente todas as variáveis TXHOST_DEFAULT_* no server.cfg
 echo "🔄 Substituindo variáveis TXHOST_DEFAULT_* no server.cfg..."
-for var in $(env | grep '^TXHOST_DEFAULT_' | cut -d= -f1); do
-  value="${!var}"
+env | grep '^TXHOST_DEFAULT_' | while IFS='=' read -r var value; do
   if [ -n "$value" ]; then
     sed -i "s|\$$var|$value|g" "$FX_DATA_PATH/scripts-base/server.cfg"
     echo "  ✅ $var substituído"
