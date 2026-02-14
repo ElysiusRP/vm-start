@@ -47,7 +47,7 @@ if [ ! -d "$FX_DATA_PATH/scripts-base/.git" ]; then
   echo "📥 Repositório não encontrado, clonando..."
   rm -rf "$FX_DATA_PATH/scripts-base" # limpa se existir lixo
   GIT_HTTP_URL="https://${GIT_DOMAIN}/${GIT_REPO}.git"
-  if git clone --recursive -b "$GIT_PULL_BRANCH" "$GIT_HTTP_URL" scripts-base; then
+  if git clone -b "$GIT_PULL_BRANCH" "$GIT_HTTP_URL" scripts-base; then
     echo "✅ Repositório clonado com sucesso"
   else
     echo "❌ Falha ao clonar repositório, criando pasta vazia"
@@ -82,20 +82,39 @@ if [ "${AUTOUPDATE}" = "TRUE" ] && [ -d ".git" ]; then
   # Limpa locks antes de tudo
   find .git/modules -name index.lock -exec rm -f {} \; 2>/dev/null || true
 
-  # Remove submódulos sujos rapidamente sem refazer clone
-  git submodule foreach --recursive '
-    echo "Limpando $name com stash..."
-    rm -f "$(git rev-parse --git-dir)/index.lock" || true
-    git stash push --include-untracked || true
-    git stash clear || true
-  '
-  
-  # Agora atualiza para o hash correto do commit principal
-  git submodule sync --recursive
-  git submodule update --recursive
+  # Inicializa apenas o submódulo selecionado via GIT_SUBMODULE
+  if [ -n "$GIT_SUBMODULE" ]; then
+    echo "📦 Inicializando submódulo selecionado: $GIT_SUBMODULE"
 
-  # Força LFS nos submódulos se necessário
-  git submodule foreach --recursive 'git lfs pull || true'
+    # Limpa submódulos existentes do selecionado
+    if [ -d "$GIT_SUBMODULE" ]; then
+      cd "$GIT_SUBMODULE" 2>/dev/null && \
+      git submodule foreach --recursive '
+        echo "Limpando $name com stash..."
+        rm -f "$(git rev-parse --git-dir)/index.lock" || true
+        git stash push --include-untracked || true
+        git stash clear || true
+      ' 2>/dev/null
+      cd "$FX_DATA_PATH/scripts-base"
+    fi
+
+    git submodule sync "$GIT_SUBMODULE"
+    git submodule update --init "$GIT_SUBMODULE"
+
+    # Atualiza recursivamente os sub-submódulos dentro do selecionado
+    cd "$GIT_SUBMODULE"
+    git submodule sync --recursive
+    git submodule update --init --recursive
+    git submodule foreach --recursive 'git lfs pull || true'
+    cd "$FX_DATA_PATH/scripts-base"
+
+    # LFS do submódulo principal
+    cd "$GIT_SUBMODULE" && git lfs pull && cd "$FX_DATA_PATH/scripts-base"
+
+    echo "✅ Submódulo $GIT_SUBMODULE inicializado com sucesso"
+  else
+    echo "⚠️ GIT_SUBMODULE não definido, nenhum submódulo será inicializado"
+  fi
 elif [ "${AUTOUPDATE}" = "TRUE" ] && [ ! -d ".git" ]; then
   echo "⚠️ AUTOUPDATE habilitado mas não há repositório git válido - pulando atualização"
 fi

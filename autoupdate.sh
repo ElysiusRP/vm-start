@@ -51,15 +51,24 @@ while true; do
     git stash clear 2>/dev/null || true
 
     # Pull das mudanças
-    if git pull origin "$GIT_PULL_BRANCH" --recurse-submodules; then
+    if git pull origin "$GIT_PULL_BRANCH"; then
       echo "[AutoUpdate] Repositório atualizado com sucesso!"
 
-      # Atualiza LFS se necessário
+      # Atualiza LFS do repo principal
       git lfs pull 2>/dev/null || true
 
-      # Atualiza submódulos
-      git submodule update --recursive 2>/dev/null || true
-      git submodule foreach --recursive 'git lfs pull 2>/dev/null || true'
+      # Atualiza apenas o submódulo selecionado
+      if [ -n "$GIT_SUBMODULE" ]; then
+        echo "[AutoUpdate] Atualizando submódulo: $GIT_SUBMODULE"
+        git submodule sync "$GIT_SUBMODULE" 2>/dev/null || true
+        git submodule update --init "$GIT_SUBMODULE" 2>/dev/null || true
+        cd "$GIT_SUBMODULE" 2>/dev/null && \
+          git submodule sync --recursive 2>/dev/null || true && \
+          git submodule update --init --recursive 2>/dev/null || true && \
+          git submodule foreach --recursive 'git lfs pull 2>/dev/null || true' && \
+          git lfs pull 2>/dev/null || true && \
+          cd "$REPO_PATH"
+      fi
 
       # Regenera server.cfg com o template atualizado
       /generate-config.sh
@@ -69,7 +78,16 @@ while true; do
       echo "[AutoUpdate] Erro ao atualizar, tentando reset..."
       git fetch origin "$GIT_PULL_BRANCH"
       git reset --hard "origin/$GIT_PULL_BRANCH"
-      git submodule update --recursive --force 2>/dev/null || true
+
+      # Atualiza apenas o submódulo selecionado após reset
+      if [ -n "$GIT_SUBMODULE" ]; then
+        git submodule sync "$GIT_SUBMODULE" 2>/dev/null || true
+        git submodule update --init --force "$GIT_SUBMODULE" 2>/dev/null || true
+        cd "$GIT_SUBMODULE" 2>/dev/null && \
+          git submodule update --init --recursive --force 2>/dev/null || true && \
+          git lfs pull 2>/dev/null || true && \
+          cd "$REPO_PATH"
+      fi
 
       # Regenera server.cfg após reset
       /generate-config.sh
