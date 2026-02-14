@@ -34,7 +34,8 @@ RUN git lfs install --system \
 
 COPY run.sh /run.sh
 COPY autoupdate.sh /autoupdate.sh
-RUN chmod +x /run.sh /autoupdate.sh
+COPY generate-config.sh /generate-config.sh
+RUN chmod +x /run.sh /autoupdate.sh /generate-config.sh
 
 EXPOSE 30120/tcp 30120/udp 40120
 WORKDIR /opt/cfx-server/

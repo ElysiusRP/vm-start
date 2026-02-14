@@ -61,12 +61,19 @@ while true; do
       git submodule update --recursive 2>/dev/null || true
       git submodule foreach --recursive 'git lfs pull 2>/dev/null || true'
 
+      # Regenera server.cfg com o template atualizado
+      /generate-config.sh
+
       echo "[AutoUpdate] Atualização concluída!"
     else
       echo "[AutoUpdate] Erro ao atualizar, tentando reset..."
       git fetch origin "$GIT_PULL_BRANCH"
       git reset --hard "origin/$GIT_PULL_BRANCH"
       git submodule update --recursive --force 2>/dev/null || true
+
+      # Regenera server.cfg após reset
+      /generate-config.sh
+
       echo "[AutoUpdate] Reset concluído!"
     fi
   fi

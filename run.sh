@@ -110,32 +110,8 @@ fi
 
 # Continua o resto do script normalmente...
 
-# 9. Verifica template do servidor
-if [ ! -f "$FX_DATA_PATH/scripts-base/server.template.cfg" ]; then
-  echo "❌ Template não encontrado: $FX_DATA_PATH/scripts-base/server.template.cfg"
-  exit 1
-fi
-
-# 10. Copia template
-cp -f "$FX_DATA_PATH/scripts-base/server.template.cfg" "$FX_DATA_PATH/scripts-base/server.cfg"
-
-# 11. Substitui automaticamente todas as variáveis TXHOST_DEFAULT_* no server.cfg
-echo "🔄 Substituindo variáveis TXHOST_DEFAULT_* no server.cfg..."
-env | grep '^TXHOST_DEFAULT_' | while IFS='=' read -r var value; do
-  if [ -n "$value" ]; then
-    sed -i "s|\$$var|$value|g" "$FX_DATA_PATH/scripts-base/server.cfg"
-    echo "  ✅ $var substituído"
-  else
-    echo "  ⚠️ $var está vazio, ignorando..."
-  fi
-done
-
-# Adiciona exec prxye.cfg se a variável de ambiente estiver definida
-if [ -n "$ENABLE_PROXYE" ]; then
-  echo "" >> "$FX_DATA_PATH/scripts-base/server.cfg"
-  echo "exec proxye.cfg" >> "$FX_DATA_PATH/scripts-base/server.cfg"
-  echo "✅ Adicionado 'exec prxye.cfg' ao server.cfg"
-fi
+# 9. Gera server.cfg a partir do template (env var ou arquivo)
+/generate-config.sh || exit 1
 
 # 12. Inicia o servidor FX
 
