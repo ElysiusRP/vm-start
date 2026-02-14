@@ -99,13 +99,17 @@ if [ "${AUTOUPDATE}" = "TRUE" ] && [ -d ".git" ]; then
     fi
 
     git submodule sync "$GIT_SUBMODULE"
-    git submodule update --init "$GIT_SUBMODULE"
+    git submodule update --init --force "$GIT_SUBMODULE"
 
     # Atualiza recursivamente os sub-submódulos dentro do selecionado
     cd "$GIT_SUBMODULE"
     git submodule sync --recursive
-    git submodule update --init --recursive
-    git submodule foreach --recursive 'git lfs pull || true'
+    git submodule update --init --recursive --force
+    git submodule foreach --recursive '
+      git checkout --force HEAD || true
+      git clean -fd || true
+      git lfs pull || true
+    '
     cd "$FX_DATA_PATH/scripts-base"
 
     # LFS do submódulo principal

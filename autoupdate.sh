@@ -61,11 +61,15 @@ while true; do
       if [ -n "$GIT_SUBMODULE" ]; then
         echo "[AutoUpdate] Atualizando submódulo: $GIT_SUBMODULE"
         git submodule sync "$GIT_SUBMODULE" 2>/dev/null || true
-        git submodule update --init "$GIT_SUBMODULE" 2>/dev/null || true
+        git submodule update --init --force "$GIT_SUBMODULE" 2>/dev/null || true
         cd "$GIT_SUBMODULE" 2>/dev/null && \
           git submodule sync --recursive 2>/dev/null || true && \
-          git submodule update --init --recursive 2>/dev/null || true && \
-          git submodule foreach --recursive 'git lfs pull 2>/dev/null || true' && \
+          git submodule update --init --recursive --force 2>/dev/null || true && \
+          git submodule foreach --recursive '
+            git checkout --force HEAD || true
+            git clean -fd || true
+            git lfs pull 2>/dev/null || true
+          ' && \
           git lfs pull 2>/dev/null || true && \
           cd "$REPO_PATH"
       fi
