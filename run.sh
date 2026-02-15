@@ -86,6 +86,16 @@ if [ "${AUTOUPDATE}" = "TRUE" ] && [ -d ".git" ]; then
   if [ -n "$GIT_SUBMODULE" ]; then
     echo "📦 Inicializando submódulo selecionado: $GIT_SUBMODULE"
 
+    # Desativa e remove submódulos que NÃO são o selecionado
+    git config -f .gitmodules --get-regexp '^submodule\..*\.path$' | while read key path; do
+      if [ "$path" != "$GIT_SUBMODULE" ]; then
+        echo "🗑️ Removendo submódulo não selecionado: $path"
+        git submodule deinit -f "$path" 2>/dev/null || true
+        rm -rf "$path" 2>/dev/null || true
+        rm -rf ".git/modules/$(echo $key | sed 's/submodule\.\(.*\)\.path/\1/')" 2>/dev/null || true
+      fi
+    done
+
     # Limpa submódulos existentes do selecionado
     if [ -d "$GIT_SUBMODULE" ]; then
       cd "$GIT_SUBMODULE" 2>/dev/null && \

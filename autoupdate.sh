@@ -60,6 +60,16 @@ while true; do
       # Atualiza apenas o submódulo selecionado
       if [ -n "$GIT_SUBMODULE" ]; then
         echo "[AutoUpdate] Atualizando submódulo: $GIT_SUBMODULE"
+
+        # Remove submódulos que NÃO são o selecionado
+        git config -f .gitmodules --get-regexp '^submodule\..*\.path$' | while read key path; do
+          if [ "$path" != "$GIT_SUBMODULE" ]; then
+            echo "[AutoUpdate] Removendo submódulo não selecionado: $path"
+            git submodule deinit -f "$path" 2>/dev/null || true
+            rm -rf "$path" 2>/dev/null || true
+          fi
+        done
+
         git submodule sync "$GIT_SUBMODULE" 2>/dev/null || true
         git submodule update --init --force "$GIT_SUBMODULE" 2>/dev/null || true
         cd "$GIT_SUBMODULE" 2>/dev/null && \
@@ -85,6 +95,14 @@ while true; do
 
       # Atualiza apenas o submódulo selecionado após reset
       if [ -n "$GIT_SUBMODULE" ]; then
+        # Remove submódulos que NÃO são o selecionado
+        git config -f .gitmodules --get-regexp '^submodule\..*\.path$' | while read key path; do
+          if [ "$path" != "$GIT_SUBMODULE" ]; then
+            git submodule deinit -f "$path" 2>/dev/null || true
+            rm -rf "$path" 2>/dev/null || true
+          fi
+        done
+
         git submodule sync "$GIT_SUBMODULE" 2>/dev/null || true
         git submodule update --init --force "$GIT_SUBMODULE" 2>/dev/null || true
         cd "$GIT_SUBMODULE" 2>/dev/null && \
