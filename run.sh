@@ -84,6 +84,8 @@ if [ "${AUTOUPDATE}" = "TRUE" ] && [ -d ".git" ]; then
 
   # Inicializa apenas o submódulo selecionado via GIT_SUBMODULE
   if [ -n "$GIT_SUBMODULE" ]; then
+    # Normaliza barras invertidas para barras normais (Windows → Unix)
+    GIT_SUBMODULE="${GIT_SUBMODULE//\\//}"
     echo "📦 Inicializando submódulo selecionado: $GIT_SUBMODULE"
 
     # Desativa e remove submódulos que NÃO são o selecionado

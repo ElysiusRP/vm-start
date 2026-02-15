@@ -59,6 +59,8 @@ while true; do
 
       # Atualiza apenas o submódulo selecionado
       if [ -n "$GIT_SUBMODULE" ]; then
+        # Normaliza barras invertidas para barras normais (Windows → Unix)
+        GIT_SUBMODULE="${GIT_SUBMODULE//\\//}"
         echo "[AutoUpdate] Atualizando submódulo: $GIT_SUBMODULE"
 
         # Remove submódulos que NÃO são o selecionado
@@ -95,6 +97,7 @@ while true; do
 
       # Atualiza apenas o submódulo selecionado após reset
       if [ -n "$GIT_SUBMODULE" ]; then
+        GIT_SUBMODULE="${GIT_SUBMODULE//\\//}"
         # Remove submódulos que NÃO são o selecionado
         git config -f .gitmodules --get-regexp '^submodule\..*\.path$' | while read key path; do
           if [ "$path" != "$GIT_SUBMODULE" ]; then
