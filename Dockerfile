@@ -1,7 +1,7 @@
 FROM alpine:latest AS fivem-base
 
 RUN apk add --no-cache curl bash && \
-    curl -L -o /tmp/fx.tar.xz "https://runtime.fivem.net/artifacts/fivem/build_proot_linux/master/21703-0b6d5de3902cda6dd91be0c489d9b7243e554bb1/fx.tar.xz" && \
+    curl -L -o /tmp/fx.tar.xz "https://runtime.fivem.net/artifacts/fivem/build_proot_linux/master/25770-8ddccd4e4dfd6a760ce18651656463f961cc4761/fx.tar.xz" && \
     cd / && tar -xf /tmp/fx.tar.xz && rm /tmp/fx.tar.xz
 
 FROM alpine:latest
