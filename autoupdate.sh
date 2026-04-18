@@ -19,6 +19,17 @@ done
 
 cd "$REPO_PATH"
 
+remove_empty_dirs() {
+  local target="${1:-$REPO_PATH}"
+  local removed
+  removed=$(find "$target" -mindepth 1 -depth -type d -empty \
+    -not -path "*/.git/*" -not -path "*/.git" -delete -print 2>/dev/null)
+  if [ -n "$removed" ]; then
+    echo "[AutoUpdate] Pastas vazias removidas:"
+    echo "$removed" | sed 's/^/  /'
+  fi
+}
+
 while true; do
   sleep $CHECK_INTERVAL
 
@@ -86,6 +97,9 @@ while true; do
           cd "$REPO_PATH"
       fi
 
+      # Remove pastas vazias deixadas por arquivos movidos/deletados
+      remove_empty_dirs "$REPO_PATH"
+
       # Regenera server.cfg com o template atualizado
       /generate-config.sh
 
@@ -113,6 +127,9 @@ while true; do
           git lfs pull 2>/dev/null || true && \
           cd "$REPO_PATH"
       fi
+
+      # Remove pastas vazias deixadas por arquivos movidos/deletados
+      remove_empty_dirs "$REPO_PATH"
 
       # Regenera server.cfg após reset
       /generate-config.sh

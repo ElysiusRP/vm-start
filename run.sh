@@ -63,6 +63,17 @@ fi
 
 cd "$FX_DATA_PATH/scripts-base"
 
+remove_empty_dirs() {
+  local target="${1:-$FX_DATA_PATH/scripts-base}"
+  local removed
+  removed=$(find "$target" -mindepth 1 -depth -type d -empty \
+    -not -path "*/.git/*" -not -path "*/.git" -delete -print 2>/dev/null)
+  if [ -n "$removed" ]; then
+    echo "🗑️ Pastas vazias removidas:"
+    echo "$removed" | sed 's/^/  /'
+  fi
+}
+
 # Bloco de atualização automática do git
 if [ "${AUTOUPDATE}" = "TRUE" ] && [ -d ".git" ]; then
   echo "🔄 Iniciando atualização automática do repositório..."
@@ -134,6 +145,9 @@ if [ "${AUTOUPDATE}" = "TRUE" ] && [ -d ".git" ]; then
 elif [ "${AUTOUPDATE}" = "TRUE" ] && [ ! -d ".git" ]; then
   echo "⚠️ AUTOUPDATE habilitado mas não há repositório git válido - pulando atualização"
 fi
+
+# Remove pastas vazias deixadas por arquivos movidos/deletados
+remove_empty_dirs "$FX_DATA_PATH/scripts-base"
 
 # Inicia o script de auto-update em background (verifica a cada 1 minuto)
 if [ "${AUTOUPDATE}" = "TRUE" ]; then
