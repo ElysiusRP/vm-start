@@ -36,16 +36,18 @@ chmod 600 ~/.git-credentials
 
 cd "$FX_DATA_PATH"
 
-# Verifica se a pasta scripts-base existe, se não existir, cria
-if [ ! -d "$FX_DATA_PATH/scripts-base" ]; then
-  echo "📁 Pasta scripts-base não encontrada, criando..."
-  mkdir -p "$FX_DATA_PATH/scripts-base"
+mkdir -p "$FX_DATA_PATH/scripts-base"
+
+# Locks orfaos (restart mata o git no meio): no boot nada mais usa o git aqui.
+# Cobre o repo principal e os submodulos em .git/modules.
+if [ -d "$FX_DATA_PATH/scripts-base/.git" ]; then
+  find "$FX_DATA_PATH/scripts-base/.git" -name '*.lock' -type f -delete 2>/dev/null || true
 fi
 
-# Se não existir repo git, clona
-if [ ! -d "$FX_DATA_PATH/scripts-base/.git" ]; then
-  echo "📥 Repositório não encontrado, clonando..."
-  rm -rf "$FX_DATA_PATH/scripts-base" # limpa se existir lixo
+# Sem .git, ou .git sem nenhum commit (clone interrompido): clona de novo
+if [ ! -d "$FX_DATA_PATH/scripts-base/.git" ] ||    ! git -C "$FX_DATA_PATH/scripts-base" rev-parse --verify -q HEAD >/dev/null 2>&1; then
+  echo "📥 Repositório ausente ou incompleto, clonando..."
+  rm -rf "$FX_DATA_PATH/scripts-base"
   GIT_HTTP_URL="https://${GIT_DOMAIN}/${GIT_REPO}.git"
   if git clone -b "$GIT_PULL_BRANCH" "$GIT_HTTP_URL" scripts-base; then
     echo "✅ Repositório clonado com sucesso"
@@ -53,12 +55,6 @@ if [ ! -d "$FX_DATA_PATH/scripts-base/.git" ]; then
     echo "❌ Falha ao clonar repositório, criando pasta vazia"
     mkdir -p "$FX_DATA_PATH/scripts-base"
   fi
-fi
-
-# Garante que a pasta existe antes de tentar acessá-la
-if [ ! -d "$FX_DATA_PATH/scripts-base" ]; then
-  echo "📁 Criando pasta scripts-base..."
-  mkdir -p "$FX_DATA_PATH/scripts-base"
 fi
 
 cd "$FX_DATA_PATH/scripts-base"
