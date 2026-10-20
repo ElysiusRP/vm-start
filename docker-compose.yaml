@@ -1,0 +1,38 @@
+services:
+  fivem:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "30120:30120/tcp"
+      - "30120:30120/udp"
+      - "40120:40120/tcp"
+    environment:
+      - GIT_DOMAIN=${GIT_DOMAIN}
+      - GIT_USERNAME=${GIT_USERNAME}
+      - GIT_TOKEN=${GIT_TOKEN}
+      - GIT_REPO=${GIT_REPO}
+      - GIT_PULL_BRANCH=${GIT_PULL_BRANCH}
+      - FX_DATA_PATH=${FX_DATA_PATH:-/txData}
+      - AUTOUPDATE=${AUTOUPDATE}
+      - GIT_SUBMODULE=${GIT_SUBMODULE}
+      - SERVER_TEMPLATE_NAME=${SERVER_TEMPLATE_NAME}
+      - ENABLE_PROXYE=${ENABLE_PROXYE}
+      - TZ=${TZ:-America/Sao_Paulo}
+      - TXHOST_DEFAULT_LICENSE_KEY=${TXHOST_DEFAULT_LICENSE_KEY}
+      - TXHOST_DEFAULT_DBHOST=${TXHOST_DEFAULT_DBHOST}
+      - TXHOST_DEFAULT_DBPORT=${TXHOST_DEFAULT_DBPORT}
+      - TXHOST_DEFAULT_DBUSER=${TXHOST_DEFAULT_DBUSER}
+      - TXHOST_DEFAULT_DBPASS=${TXHOST_DEFAULT_DBPASS}
+      - TXHOST_DEFAULT_DBNAME=${TXHOST_DEFAULT_DBNAME}
+      - TXHOST_DEFAULT_TEBEX_SECRET=${TXHOST_DEFAULT_TEBEX_SECRET}
+      - TXHOST_DEFAULT_BOOSTER_API_SECRET=${TXHOST_DEFAULT_BOOSTER_API_SECRET}
+    volumes:
+      # volume já existente do Coolify, preserva os dados atuais
+      - txdata:/txData
+
+volumes:
+  txdata:
+    external: true
+    name: udfkfhzfg2rh25r4rfv9ygsi-txdata
