@@ -4,6 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
+    networks:
+      - coolify
     ports:
       - "30120:30120/tcp"
       - "30120:30120/udp"
@@ -36,3 +38,8 @@ volumes:
   txdata:
     external: true
     name: udfkfhzfg2rh25r4rfv9ygsi-txdata
+
+networks:
+  coolify:
+    external: true
+    name: coolify
